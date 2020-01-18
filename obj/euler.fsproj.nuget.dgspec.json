@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "/home/matt/git/euler/euler.fsproj": {}
+    "/home/matt/git/euler-fsharp/euler.fsproj": {}
   },
   "projects": {
-    "/home/matt/git/euler/euler.fsproj": {
+    "/home/matt/git/euler-fsharp/euler.fsproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/home/matt/git/euler/euler.fsproj",
+        "projectUniqueName": "/home/matt/git/euler-fsharp/euler.fsproj",
         "projectName": "euler",
-        "projectPath": "/home/matt/git/euler/euler.fsproj",
+        "projectPath": "/home/matt/git/euler-fsharp/euler.fsproj",
         "packagesPath": "/home/matt/.nuget/packages/",
-        "outputPath": "/home/matt/git/euler/obj/",
+        "outputPath": "/home/matt/git/euler-fsharp/obj/",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "/usr/share/dotnet/sdk/NuGetFallbackFolder"
