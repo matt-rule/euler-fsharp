@@ -7,7 +7,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "dotnet",
-            "args": ["${workspaceRoot}/bin/Debug/netcoreapp3.0/euler.dll", "1"],
+            "args": ["${workspaceRoot}/bin/Debug/netcoreapp3.0/euler.dll", "3"],
             "cwd": "${workspaceRoot}",
             "externalConsole": false,
             "stopAtEntry": false,
