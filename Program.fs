@@ -34,13 +34,27 @@ let problem4 =
     |> Seq.max
     |> string
 
+let problem5 =
+    Seq.initInfinite(fun x -> x + 1)
+    |> Seq.where (fun x ->
+        seq {1..20}
+        |> Seq.forall(fun y -> x % y = 0)
+    )
+    |> Seq.head
+    |> string
+
 let answers = [|
     (problem1, "233168")
     (problem2, "4613732")
     (problem3, "6857")
     (problem4, "906609")
+    (problem5, "232792560")
 |]
 
 answers
 |> Array.forall(fun (x, y) -> x = y)
+|> Console.WriteLine
+answers
+|> Array.where(fun (x, y) -> x <> y)
+|> String.Concat
 |> Console.WriteLine
