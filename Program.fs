@@ -84,6 +84,13 @@ let problem7 n =
 
 let problem8 n = "Not implemented."
 
+let problem9 n =
+    let input = Int32.Parse n
+    seq { 1..input }
+    |> (fun x -> (
+
+    ))
+
 type Problem = {
     func : string -> string;
     testInput : string;
@@ -156,6 +163,14 @@ let problems = [|
         testInput = "";
         testOutput = "";
         problemInput = "";
+        problemOutput = "";
+        runsSlowly = false
+    };
+    {
+        func = problem9;
+        testInput = "25";
+        testOutput = "12";
+        problemInput = "1000";
         problemOutput = "";
         runsSlowly = false
     };
