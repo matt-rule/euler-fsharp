@@ -66,14 +66,21 @@ let problem6 n =
     abs(sumOfSquares - squareOfSum)
     |> string
 
+let isPrime x =
+    x > 1 && (
+        {2..(float >> sqrt >> int) x}
+        |> Seq.forall (fun y -> x % y <> 0)
+    )
+
+let isPrime64 l =
+    l > 1L && (
+        {2L..(float >> sqrt >> int64) l}
+        |> Seq.forall (fun y -> l % y <> 0L)
+    )
+
 let problem7 n =
     let input = Int32.Parse n
     let naturalNumbers = Seq.initInfinite(fun x -> x + 1)
-    let isPrime x =
-        x > 1 && (
-            {2..(float >> sqrt >> int) x}
-            |> Seq.forall (fun y -> x % y <> 0)
-        )
     naturalNumbers
     |> Seq.where isPrime
     |> Seq.zip naturalNumbers
@@ -84,12 +91,25 @@ let problem7 n =
 
 let problem8 n = "Not implemented."
 
-let problem9 n =
-    let input = Int32.Parse n
-    seq { 1..input }
-    |> (fun x -> (
+let problem9 n = "Not implemented."
+    // let input = Int32.Parse n
+    // seq { 1..input }
+    // |> Seq.map (fun a ->
+    //     seq { (a+1)..input }
+    //     |> Seq.map (fun b ->
+    //         seq { b+1..input }
+    //         |> Seq.find (fun c ->
+    //             (a*a + b*b = c*c) && (a + b + c = input)
+    //         )
+    //     )
+    // )
 
-    ))
+let problem10 n =
+    let input = Int64.Parse n
+    seq {2L..input}
+    |> Seq.where isPrime64
+    |> Seq.sum
+    |> string
 
 type Problem = {
     func : string -> string;
@@ -168,10 +188,23 @@ let problems = [|
     };
     {
         func = problem9;
-        testInput = "25";
-        testOutput = "12";
-        problemInput = "1000";
+        testInput = "";
+        testOutput = "";
+        problemInput = "";
         problemOutput = "";
+        runsSlowly = false
+        // testInput = "25";
+        // testOutput = "12";
+        // problemInput = "1000";
+        // problemOutput = "";
+        // runsSlowly = false
+    };
+    {
+        func = problem10;
+        testInput = "10";
+        testOutput = "17";
+        problemInput = "2000000";
+        problemOutput = "142913828922";
         runsSlowly = false
     };
 |]
