@@ -111,6 +111,21 @@ let problem10 n =
     |> Seq.sum
     |> string
 
+let problem11 n = "Not implemented."
+    
+let problem12 n =
+    let input = Int32.Parse n
+    // Triangular numbers.
+    Seq.unfold(fun (acc, n) -> Some(acc + n, (acc + n, n + 1))) (0, 1)
+    |> Seq.find(fun x ->
+        // Get all divisors for x up to sqrt(x)
+        // This might count the square root twice
+        seq {1..x |> (float >> sqrt >> int)}
+        |> Seq.where(fun y -> x % y = 0)
+        |> Seq.length > input / 2
+    )
+    |> string
+
 type Problem = {
     func : string -> string;
     testInput : string;
@@ -207,6 +222,22 @@ let problems = [|
         problemOutput = "142913828922";
         runsSlowly = false
     };
+    {
+        func = problem11;
+        testInput = "";
+        testOutput = "";
+        problemInput = "";
+        problemOutput = "";
+        runsSlowly = false
+    };
+    {
+        func = problem12;
+        testInput = "5";
+        testOutput = "28";
+        problemInput = "500";
+        problemOutput = "76576500";
+        runsSlowly = false
+    };
 |]
 
 // Seq.initInfinite(fun x -> x + 1)
@@ -234,7 +265,7 @@ problems
         match (y.func y.problemInput) with
         | s when s = y.problemOutput -> "PASS"
         | "Not implemented." -> "SKIP"
-        | _ -> "FAIL"
+        | s -> "FAIL" + "(" + s.ToString() + "/" + y.problemOutput.ToString() + ")";
     )
 )
 |> Seq.fold(fun x y -> x + Environment.NewLine + y) ""
