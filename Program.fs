@@ -126,6 +126,24 @@ let problem12 n =
     )
     |> string
 
+let problem13 n = "Not implemented."
+    
+let problem14 n =
+    let input = Int64.Parse n
+    // Collatz sequence.
+    let collatzSequence = Seq.unfold(fun x ->
+        if x = 1L then None else
+        Some(
+            let next = (if x % 2L = 0L then (x / 2L) else (x*3L + 1L))
+            (next, next)
+        )
+    )
+    seq {1L..input-1L}
+    |> Seq.map(fun x -> (x, x |> collatzSequence |> Seq.length))
+    |> Seq.fold(fun (x : int64 * int) (y : int64 * int) -> if (snd x) > (snd y) then x else y) (1L, 1)
+    |> fst
+    |> string
+
 type Problem = {
     func : string -> string;
     testInput : string;
@@ -236,6 +254,22 @@ let problems = [|
         testOutput = "28";
         problemInput = "500";
         problemOutput = "76576500";
+        runsSlowly = false
+    };
+    {
+        func = problem13;
+        testInput = "";
+        testOutput = "";
+        problemInput = "";
+        problemOutput = "";
+        runsSlowly = false
+    };
+    {
+        func = problem14;
+        testInput = "1";
+        testOutput = "1";
+        problemInput = "1000000";
+        problemOutput = "837799";
         runsSlowly = false
     };
 |]
