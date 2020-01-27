@@ -143,6 +143,27 @@ let problem14 n =
     |> Seq.fold(fun (x : int64 * int) (y : int64 * int) -> if (snd x) > (snd y) then x else y) (1L, 1)
     |> fst
     |> string
+    
+let problem15 input =
+    let n = Int32.Parse input
+    let rec countLattice state step maxStep =
+        if step = maxStep
+        then
+            (state |> Seq.pairwise |> Seq.map(fun (x, y) -> x + y))
+            |> Seq.exactlyOne
+        else
+            countLattice
+                (
+                    if (step <= maxStep / 2)
+                    then
+                        (Seq.concat [seq {1L..1L}; (state |> Seq.pairwise |> Seq.map(fun (x, y) -> x + y)); seq {1L..1L}])
+                    else
+                        (state |> Seq.pairwise |> Seq.map(fun (x, y) -> x + y))
+                )
+                (step + 1)
+                maxStep
+    (countLattice (seq{1L..1L}) 1 (n*2))
+    |> string
 
 type Problem = {
     func : string -> string;
@@ -270,6 +291,14 @@ let problems = [|
         testOutput = "1";
         problemInput = "1000000";
         problemOutput = "837799";
+        runsSlowly = false
+    };
+    {
+        func = problem15;
+        testInput = "2";
+        testOutput = "6";
+        problemInput = "20";
+        problemOutput = "137846528820";
         runsSlowly = false
     };
 |]
