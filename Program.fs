@@ -84,12 +84,9 @@ let problem7 n =
     naturalNumbers
     |> Seq.where isPrime
     |> Seq.zip naturalNumbers
-    |> Seq.where(fun (x, y) -> x = input)
-    |> Seq.head
+    |> Seq.find(fun (x, y) -> x = input)
     |> snd
     |> string
-
-let problem8 n = "Not implemented."
 
 let problem9 n = "Not implemented."
     // let input = Int32.Parse n
@@ -110,8 +107,6 @@ let problem10 n =
     |> Seq.where isPrime64
     |> Seq.sum
     |> string
-
-let problem11 n = "Not implemented."
     
 let problem12 n =
     let input = Int32.Parse n
@@ -125,8 +120,6 @@ let problem12 n =
         |> Seq.length > input / 2
     )
     |> string
-
-let problem13 n = "Not implemented."
     
 let problem14 n =
     let input = Int64.Parse n
@@ -165,13 +158,22 @@ let problem15 input =
     (countLattice (seq{1L..1L}) 1 (n*2))
     |> string
 
+let rec nest p f x = if p=0 then x else nest (p-1) f (f x)
+let sumOfDigits = string >> Seq.sumBy (string >> Int32.Parse)
+
 let problem16 input =
     let n = Int32.Parse input
-    let rec nest p f x = if p=0 then x else nest (p-1) f (f x)
-    (nest n (fun x -> x * 2I) 1I)
+    nest n ((*) 2I) 1I
+    |> sumOfDigits
     |> string
-    |> Seq.sumBy (string >> Int32.Parse)
+
+let problem20 input =
+    let n = Int32.Parse input
+    seq {1I .. bigint n}
+    |> Seq.fold (fun x y -> bigint.Multiply (x, y)) 1I
+    |> sumOfDigits
     |> string
+
 
 let validate (problemNumber : int) (func : string -> string) input expectedOutput =
     "Problem "
@@ -214,3 +216,8 @@ do validate 15 problem15 "2" "6"
 do validate 15 problem15 "20" "137846528820"
 do validate 16 problem16 "15" "26"
 do validate 16 problem16 "1000" "1366"
+// Skip 17-19 due to large input.
+do validate 20 problem20 "10" "27"
+do validate 20 problem20 "100" "648"
+
+let aaa = (*) 5
