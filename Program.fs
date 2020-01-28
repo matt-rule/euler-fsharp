@@ -165,6 +165,14 @@ let problem15 input =
     (countLattice (seq{1L..1L}) 1 (n*2))
     |> string
 
+let problem16 input =
+    let n = Int32.Parse input
+    let rec nest p f x = if p=0 then x else nest (p-1) f (f x)
+    (nest n (fun x -> x * 2I) 1I)
+    |> string
+    |> Seq.sumBy (string >> Int32.Parse)
+    |> string
+
 let validate (problemNumber : int) (func : string -> string) input expectedOutput =
     "Problem "
     + (String.Concat problemNumber)
@@ -200,6 +208,9 @@ do validate 12 problem12 "5" "28"
 do validate 12 problem12 "500" "76576500"
 // Skip 13 due to large input.
 // TODO: Validation for 14 is to make sure the sequence from 13 to 1 contains 10 terms.
-do validate 14 problem14 "1000000" "837799"
+// Skip 14 because it takes a long time.
+// do validate 14 problem14 "1000000" "837799"
 do validate 15 problem15 "2" "6"
 do validate 15 problem15 "20" "137846528820"
+do validate 16 problem16 "15" "26"
+do validate 16 problem16 "1000" "1366"
