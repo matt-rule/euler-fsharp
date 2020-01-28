@@ -165,171 +165,41 @@ let problem15 input =
     (countLattice (seq{1L..1L}) 1 (n*2))
     |> string
 
-type Problem = {
-    func : string -> string;
-    testInput : string;
-    testOutput : string;
-    problemInput : string;
-    // null if unknown.
-    problemOutput : string;
-    runsSlowly : bool;
-}
-
-let problems = [|
-    {
-        func = problem1;
-        testInput = "10";
-        testOutput = "23";
-        problemInput = "1000";
-        problemOutput = "233168";
-        runsSlowly = false
-    };
-    {
-        func = problem2;
-        testInput = "100";
-        testOutput = "44";
-        problemInput = "4000000";
-        problemOutput = "4613732";
-        runsSlowly = false
-    };
-    {
-        func = problem3;
-        testInput = "13195";
-        testOutput = "29";
-        problemInput = "600851475143";
-        problemOutput = "6857";
-        runsSlowly = false
-    };
-    {
-        func = problem4;
-        testInput = "2";
-        testOutput = "9009";
-        problemInput = "3";
-        problemOutput = "906609";
-        runsSlowly = false
-    };
-    {
-        func = problem5;
-        testInput = "10";
-        testOutput = "2520";
-        problemInput = "20";
-        problemOutput = "232792560";
-        runsSlowly = true
-    };
-    {
-        func = problem6;
-        testInput = "10";
-        testOutput = "2640";
-        problemInput = "100";
-        problemOutput = "25164150";
-        runsSlowly = false
-    };
-    {
-        func = problem7;
-        testInput = "6";
-        testOutput = "13";
-        problemInput = "10001";
-        problemOutput = "104743";
-        runsSlowly = false
-    };
-    {
-        func = problem8;
-        testInput = "";
-        testOutput = "";
-        problemInput = "";
-        problemOutput = "";
-        runsSlowly = false
-    };
-    {
-        func = problem9;
-        testInput = "";
-        testOutput = "";
-        problemInput = "";
-        problemOutput = "";
-        runsSlowly = false
-        // testInput = "25";
-        // testOutput = "12";
-        // problemInput = "1000";
-        // problemOutput = "";
-        // runsSlowly = false
-    };
-    {
-        func = problem10;
-        testInput = "10";
-        testOutput = "17";
-        problemInput = "2000000";
-        problemOutput = "142913828922";
-        runsSlowly = false
-    };
-    {
-        func = problem11;
-        testInput = "";
-        testOutput = "";
-        problemInput = "";
-        problemOutput = "";
-        runsSlowly = false
-    };
-    {
-        func = problem12;
-        testInput = "5";
-        testOutput = "28";
-        problemInput = "500";
-        problemOutput = "76576500";
-        runsSlowly = false
-    };
-    {
-        func = problem13;
-        testInput = "";
-        testOutput = "";
-        problemInput = "";
-        problemOutput = "";
-        runsSlowly = false
-    };
-    {
-        func = problem14;
-        testInput = "1";
-        testOutput = "1";
-        problemInput = "1000000";
-        problemOutput = "837799";
-        runsSlowly = false
-    };
-    {
-        func = problem15;
-        testInput = "2";
-        testOutput = "6";
-        problemInput = "20";
-        problemOutput = "137846528820";
-        runsSlowly = false
-    };
-|]
-
-// Seq.initInfinite(fun x -> x + 1)
-// |> Seq.map(fun x -> (x, isPrime x))
-// |> Seq.take 10
-// |> Seq.map (fun (x, y) -> x.ToString() + " " + y.ToString())
-// |> Seq.fold(fun x y -> x + Environment.NewLine + y) ""
-// |> Console.WriteLine
-
-problems
-|> Seq.zip(Seq.initInfinite(fun x -> x + 1))
-|> Seq.where(fun (x, y) -> not y.runsSlowly)
-|> Seq.map(fun (x, y) ->
+let validate (problemNumber : int) (func : string -> string) input expectedOutput =
     "Problem "
-    + (String.Concat x)
+    + (String.Concat problemNumber)
     + ". "
     + (
-        match (y.func y.testInput) with
-        | s when s = y.testOutput -> "PASS"
-        | "Not implemented." -> "SKIP"
-        | _ -> "FAIL"
+        match (func input) with
+        | output when output = expectedOutput -> "PASS (" + output + ")";
+        | output -> "FAIL (" + output + "/" + expectedOutput + ")";
     )
-    + "/"
-    + (
-        match (y.func y.problemInput) with
-        | s when s = y.problemOutput -> "PASS"
-        | "Not implemented." -> "SKIP"
-        | s -> "FAIL" + "(" + s.ToString() + "/" + y.problemOutput.ToString() + ")";
-    )
-)
-|> Seq.fold(fun x y -> x + Environment.NewLine + y) ""
-|> Console.WriteLine
+    |> Console.WriteLine
+
+do validate 1 problem1 "10" "23"
+do validate 1 problem1 "1000" "233168"
+do validate 2 problem2 "100" "44"
+do validate 2 problem2 "4000000" "4613732"
+do validate 3 problem3 "13195" "29"
+do validate 3 problem3 "600851475143" "6857"
+do validate 4 problem4 "2" "9009"
+do validate 4 problem4 "3" "906609"
+// 5 takes a long time. It may be possible to answer using prime factors.
+// do validate 5 problem5 "10" "2520"
+// do validate 5 problem5 "20" "232792560"
+do validate 6 problem6 "10" "2640"
+do validate 6 problem6 "100" "25164150"
+do validate 7 problem7 "6" "13"
+do validate 7 problem7 "10001" "104743"
+// Skip 8 due to large input.
+// TODO: 9.
+do validate 10 problem10 "10" "17"
+do validate 10 problem10 "2000000" "142913828922"
+// Skip 11 due to large input.
+do validate 12 problem12 "5" "28"
+do validate 12 problem12 "500" "76576500"
+// Skip 13 due to large input.
+// TODO: Validation for 14 is to make sure the sequence from 13 to 1 contains 10 terms.
+do validate 14 problem14 "1000000" "837799"
+do validate 15 problem15 "2" "6"
+do validate 15 problem15 "20" "137846528820"
