@@ -198,6 +198,22 @@ let problem23 input =
     |> Seq.sum
     |> string
 
+let problem24 input =
+    // We want to obtain the nth permutation.
+    let n = Int32.Parse input
+    // Define a recursive function to generate a sequence
+    let rec getPermutationsWithPDigits (s : string) (p : int) : string seq =
+        seq {
+            for i in seq {0..9} |> Seq.where (string >> s.Contains >> not) do 
+            match p with
+            | 1 -> yield (s + (string i))
+            | _ -> yield! (getPermutationsWithPDigits (s + (string i)) (p - 1))
+        }
+    getPermutationsWithPDigits "" 10
+    |> Seq.skip (n - 1)
+    |> Seq.take 1
+    |> Seq.head
+
 let validate (problemNumber : int) (func : string -> string) input expectedOutput =
     "Problem "
     + (String.Concat problemNumber)
@@ -227,7 +243,8 @@ do validate 7 problem7 "10001" "104743"
 // Skip 8 due to large input.
 // TODO: 9.
 do validate 10 problem10 "10" "17"
-do validate 10 problem10 "2000000" "142913828922"
+// Skip this because it's too slow.
+// do validate 10 problem10 "2000000" "142913828922"
 // Skip 11 due to large input.
 do validate 12 problem12 "5" "28"
 do validate 12 problem12 "500" "76576500"
@@ -247,3 +264,6 @@ do validate 21 problem21 "10000" "31626"
 // Skip 22 due to large input.
 // TODO: Optimise 23.
 // do validate 23 problem23 "28123" "0"
+// TODO: Optimise
+// do validate 24 problem24 "1000000" "2783915460"
+
