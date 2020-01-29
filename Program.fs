@@ -214,6 +214,16 @@ let problem24 input =
     |> Seq.take 1
     |> Seq.head
 
+let problem25 input = 
+    let n = Int32.Parse input
+    let fibonacci = Seq.unfold(fun (x, y) -> Some(x + y, (y, x + y))) (0I, 1I)
+    let indexedFibonacci = fibonacci |> Seq.zip (Seq.initInfinite(fun x -> x + 1) |> Seq.skip 1)
+    indexedFibonacci
+    |> Seq.map (fun (x, y) -> (x, string y))
+    |> Seq.find(fun (x, y) -> y.Length >= n)
+    |> fst
+    |> string
+
 let validate (problemNumber : int) (func : string -> string) input expectedOutput =
     "Problem "
     + (String.Concat problemNumber)
@@ -266,4 +276,5 @@ do validate 21 problem21 "10000" "31626"
 // do validate 23 problem23 "28123" "0"
 // TODO: Optimise
 // do validate 24 problem24 "1000000" "2783915460"
+do validate 25 problem25 "1000" ""
 
