@@ -174,14 +174,27 @@ let problem20 input =
     |> sumOfDigits
     |> string
 
+let sumOfProperDivisors n =
+    seq {1..(n-1)}
+    |> Seq.where(fun y -> n % y = 0)
+    |> Seq.sum
+
 let problem21 input =
     let n = Int32.Parse input
-    let d x =
-        seq {1..(x-1)}
-        |> Seq.where(fun y -> x % y = 0)
-        |> Seq.sum
     seq {1..n-1}
-    |> Seq.where(fun x -> (d >> d) x = x && d x <> x)
+    |> Seq.where(fun x -> (sumOfProperDivisors >> sumOfProperDivisors) x = x && sumOfProperDivisors x <> x)
+    |> Seq.sum
+    |> string
+
+let problem23 input =
+    let n = Int32.Parse input
+    let abundantNumbers = 
+        seq {1..n}
+        |> Seq.where (fun x -> sumOfProperDivisors x > x)
+        |> Seq.toArray
+    let canBeWrittenAsTheSumOfTwoAbundantNumbers p = abundantNumbers |> Array.exists(fun x -> Array.contains (p - x) abundantNumbers)
+    seq {1..n}
+    |> Seq.where(canBeWrittenAsTheSumOfTwoAbundantNumbers >> not)
     |> Seq.sum
     |> string
 
@@ -229,4 +242,8 @@ do validate 16 problem16 "1000" "1366"
 // Skip 17-19 due to large input.
 do validate 20 problem20 "10" "27"
 do validate 20 problem20 "100" "648"
+// No first part for 21.
 do validate 21 problem21 "10000" "31626"
+// Skip 22 due to large input.
+// TODO: Optimise 23.
+// do validate 23 problem23 "28123" "0"
