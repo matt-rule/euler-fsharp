@@ -174,6 +174,16 @@ let problem20 input =
     |> sumOfDigits
     |> string
 
+let problem21 input =
+    let n = Int32.Parse input
+    let d x =
+        seq {1..(x-1)}
+        |> Seq.where(fun y -> x % y = 0)
+        |> Seq.sum
+    seq {1..n-1}
+    |> Seq.where(fun x -> (d >> d) x = x && d x <> x)
+    |> Seq.sum
+    |> string
 
 let validate (problemNumber : int) (func : string -> string) input expectedOutput =
     "Problem "
@@ -194,7 +204,7 @@ do validate 3 problem3 "13195" "29"
 do validate 3 problem3 "600851475143" "6857"
 do validate 4 problem4 "2" "9009"
 do validate 4 problem4 "3" "906609"
-// 5 takes a long time. It may be possible to answer using prime factors.
+// TODO: Calculate 5 using prime factors.
 // do validate 5 problem5 "10" "2520"
 // do validate 5 problem5 "20" "232792560"
 do validate 6 problem6 "10" "2640"
@@ -219,5 +229,4 @@ do validate 16 problem16 "1000" "1366"
 // Skip 17-19 due to large input.
 do validate 20 problem20 "10" "27"
 do validate 20 problem20 "100" "648"
-
-let aaa = (*) 5
+do validate 21 problem21 "10000" "31626"
