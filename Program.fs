@@ -88,18 +88,25 @@ let problem7 n =
     |> snd
     |> string
 
-let problem9 n = "Not implemented."
-    // let input = Int32.Parse n
-    // seq { 1..input }
-    // |> Seq.map (fun a ->
-    //     seq { (a+1)..input }
-    //     |> Seq.map (fun b ->
-    //         seq { b+1..input }
-    //         |> Seq.find (fun c ->
-    //             (a*a + b*b = c*c) && (a + b + c = input)
-    //         )
-    //     )
-    // )
+let problem9 n =
+    let input = Int32.Parse n
+    let first (x, _, _) = x
+    let second (_, x, _) = x
+    let third (_, _, x) = x
+    seq { 1..input }
+    |> Seq.collect(fun x ->
+        seq { x+1..input }
+        |> Seq.collect(fun y ->
+            seq { y+1..input }
+            |> Seq.map(fun z -> (x, y, z))
+        )
+    )
+    |> Seq.where(fun x->
+        first(x)*first(x) + second(x)*second(x) = third(x)*third(x) && (first(x) + second(x) + third(x) = 1000)
+    )
+    |> Seq.map(fun x -> first(x) * second(x) * third(x))
+    |> Seq.head
+    |> string
 
 let problem10 n =
     let input = Int64.Parse n
@@ -224,6 +231,29 @@ let problem25 input =
     |> fst
     |> string
 
+// let problem26 input =
+    
+//     // [ 1..100 ] |> Seq.map((decimal) >> (fun x -> 1.0M / x) >> string) |> Seq.iter (printfn "%s")
+//     // ""
+//     let n = Int32.Parse input
+//     seq {1..n-1}
+//     |> Seq.map (
+//         fun x ->
+//         (
+//             x,
+//             Seq.map(
+//                 (decimal
+//                 >> (fun y -> 1.0M / y)
+//                 >> string
+//                 >> (fun y -> Seq.take y.Length - 1)
+//                 ) |> 
+//             x to a number of decimal places
+//         )
+//     )
+//     |> Seq.maxBy (snd x)
+//     |> fst
+//     |> string
+
 let validate (problemNumber : int) (func : string -> string) input expectedOutput =
     "Problem "
     + (String.Concat problemNumber)
@@ -234,6 +264,8 @@ let validate (problemNumber : int) (func : string -> string) input expectedOutpu
         | output -> "FAIL (" + output + "/" + expectedOutput + ")";
     )
     |> Console.WriteLine
+
+//do validate 26 problem26 "1000" ""
 
 do validate 1 problem1 "10" "23"
 do validate 1 problem1 "1000" "233168"
@@ -251,7 +283,8 @@ do validate 6 problem6 "100" "25164150"
 do validate 7 problem7 "6" "13"
 do validate 7 problem7 "10001" "104743"
 // Skip 8 due to large input.
-// TODO: 9.
+// Skip 9 because it takes a long time.
+// do validate 9 problem9 "1000" "31875000"
 do validate 10 problem10 "10" "17"
 // Skip this because it's too slow.
 // do validate 10 problem10 "2000000" "142913828922"
@@ -266,6 +299,7 @@ do validate 15 problem15 "2" "6"
 do validate 15 problem15 "20" "137846528820"
 do validate 16 problem16 "15" "26"
 do validate 16 problem16 "1000" "1366"
+
 // Skip 17-19 due to large input.
 do validate 20 problem20 "10" "27"
 do validate 20 problem20 "100" "648"
@@ -277,4 +311,3 @@ do validate 21 problem21 "10000" "31626"
 // TODO: Optimise
 // do validate 24 problem24 "1000000" "2783915460"
 do validate 25 problem25 "1000" ""
-
