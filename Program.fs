@@ -88,23 +88,15 @@ let problem7 n =
     |> snd
     |> string
 
-let problem9 n =
-    let input = Int32.Parse n
-    let first (x, _, _) = x
-    let second (_, x, _) = x
-    let third (_, _, x) = x
-    seq { 1..input }
-    |> Seq.collect(fun x ->
-        seq { x+1..input }
-        |> Seq.collect(fun y ->
-            seq { y+1..input }
-            |> Seq.map(fun z -> (x, y, z))
-        )
-    )
-    |> Seq.where(fun x->
-        first(x)*first(x) + second(x)*second(x) = third(x)*third(x) && (first(x) + second(x) + third(x) = 1000)
-    )
-    |> Seq.map(fun x -> first(x) * second(x) * third(x))
+let problem9 input =
+    let n = Int32.Parse input
+    seq {
+        for x in seq { 1..n } do
+        for y in seq { x+1..n } do
+        for z in seq { y+1..n } do
+        if (x*x + y*y = z*z) && (x + y + z = 1000)
+        then yield (x * y * z)
+    }
     |> Seq.head
     |> string
 
@@ -284,7 +276,7 @@ do validate 7 problem7 "6" "13"
 do validate 7 problem7 "10001" "104743"
 // Skip 8 due to large input.
 // Skip 9 because it takes a long time.
-// do validate 9 problem9 "1000" "31875000"
+do validate 9 problem9 "1000" "31875000"
 do validate 10 problem10 "10" "17"
 // Skip this because it's too slow.
 // do validate 10 problem10 "2000000" "142913828922"
