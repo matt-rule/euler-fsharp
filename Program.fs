@@ -1,6 +1,4 @@
-﻿open System
-
-let problem1 n =
+﻿let problem1 n =
     {1..n-1}
     |> Seq.where(fun x -> x % 3 = 0 || x % 5 = 0)
     |> Seq.sum
@@ -24,18 +22,23 @@ let problem3 n =
     |> Seq.max
     |> string
 
+let stringConcatFromCharSeq (input : char seq) =
+    input |> (Seq.map string) |> (Seq.fold (+) "")
+
+let stringConcatFromIntSeq (input : int seq) =
+    input |> (Seq.map string) |> (Seq.fold (+) "")
 
 let problem4 n =
     let max =
         Seq.replicate n 9
-        |> String.Concat
-        |> Int32.Parse
+        |> stringConcatFromIntSeq
+        |> int
     {1..max}
     |> Seq.collect(fun x ->
         {x+1..max}
         |> Seq.map (fun y -> x*y |> string)
-        |> Seq.where (fun y -> y = (y |> seq |> Seq.rev |> String.Concat))
-        |> Seq.map(Int32.Parse)
+        |> Seq.where (fun y -> y = (y |> seq |> Seq.rev |> stringConcatFromCharSeq))
+        |> Seq.map int
     )
     |> Seq.max
     |> string
@@ -123,7 +126,7 @@ let problem14 n =
     )
     {1L..n-1L}
     |> Seq.map(fun x -> (x, x |> collatzSequence |> Seq.length))
-    |> Seq.fold(fun (x : int64 * int) (y : int64 * int) -> if (snd x) > (snd y) then x else y) (1L, 1)
+    |> Seq.fold(fun x y -> if (snd x) > (snd y) then x else y) (1L, 1)
     |> fst
     |> string
     
@@ -148,7 +151,7 @@ let problem15 n =
     |> string
 
 let rec nest p f x = if p=0 then x else nest (p-1) f (f x)
-let sumOfDigits = string >> Seq.sumBy (string >> Int32.Parse)
+let sumOfDigits = string >> Seq.sumBy (string >> int)
 
 let problem16 n =
     nest n ((*) 2I) 1I
@@ -186,7 +189,7 @@ let problem23 n =
 let problem24 n =
     // We want to obtain the nth permutation.
     // Define a recursive function to generate a sequence
-    let rec getPermutationsWithPDigits (s : string) (p : int) : string seq =
+    let rec getPermutationsWithPDigits (s : string) p =
         seq {
             for i in {0..9} |> Seq.where (string >> s.Contains >> not) do 
             match p with
@@ -293,14 +296,14 @@ let problem30 n =
 
 let validate (problemNumber : int) actualOutput expectedOutput =
     "Problem "
-    + (String.Concat problemNumber)
+    + (string problemNumber)
     + ". "
     + (
         match actualOutput with
         | output when output = expectedOutput -> "PASS (" + output + ")";
         | output -> "FAIL (" + output + "/" + expectedOutput + ")";
     )
-    |> Console.WriteLine
+    |> printfn "%s"
 
 do validate 1 (problem1 10) "23"
 do validate 1 (problem1 1000) "233168"
