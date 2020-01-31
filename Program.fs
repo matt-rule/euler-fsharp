@@ -246,28 +246,28 @@ let problem25 input =
 //     |> fst
 //     |> string
 
+// Sequences can be {1..n} instead of seq {1..n}.
+// A lot of lambda functions can be simplified for example
+// Seq.initInfinite((+) 1) instead of Seq.initInfinite(fun x -> x + 1)
+// and Seq.maxBy snd instead of Seq.maxBy(fun x -> snd x)
+// Maxby seems very useful for simplifying structure
+// You can reduce the line count by declaring a function further up,
+// then avoiding brackets around it when using it
 let problem27 input =
     let cap = Int32.Parse input
     let isPrime n =
         (n > 0)
-        && seq { 2..(n |> (float >> sqrt >> int)) }
+        && { 2..(n |> (float >> sqrt >> int)) }
         |> Seq.forall (fun x -> n % x <> 0)
-    let result =
-        seq {
-            for a in -(cap-1)..(cap-1) do
-            for b in -cap..cap do
-                yield (
-                    (a*b),
-                    (
-                        Seq.initInfinite(fun x -> x + 1)
-                        |> Seq.find(fun n -> (n*n + a*n + b) |> (isPrime >> not))
-                    )
-                )
-        }
-        |> Seq.maxBy(fun (x, y) -> y)
-    result
-    |> fst
-    |> string
+    let consecutivePrimes a b =
+        Seq.initInfinite((+) 1)
+        |> Seq.find(fun n -> (n*n + a*n + b) |> isPrime |> not)
+    seq {
+        for a in -(cap-1)..(cap-1) do
+        for b in -cap..cap do
+        yield (a*b, consecutivePrimes a b)
+    }
+    |> Seq.maxBy snd |> fst |> string
 
 let validate (problemNumber : int) (func : string -> string) input expectedOutput =
     "Problem "
