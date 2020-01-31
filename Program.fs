@@ -269,6 +269,25 @@ let problem27 input =
     }
     |> Seq.maxBy snd |> fst |> string
 
+// The first row is the total of the four sequences, evaluated at each successive ring.
+// 4 is used at the beginning because each of the four sequences needs to begin with 1.
+// The second row is the difference between each successive number and its
+// predecessor; the third row is the same logic applied again.
+// Note the numbers 4, 20, 32 on the left here. These are used in the function.
+//  4   24  76  160 276
+//      20  52  84  116
+//          32  32  32
+let problem28 input =
+    let n = Int32.Parse input
+    Seq.initInfinite (fun _ -> 32)
+    |> Seq.scan (+) 20
+    |> Seq.scan (+) 4
+    |> Seq.skip 1
+    |> Seq.take n
+    |> Seq.sum
+    |> (+) 1
+    |> string
+
 let validate (problemNumber : int) (func : string -> string) input expectedOutput =
     "Problem "
     + (String.Concat problemNumber)
@@ -279,8 +298,6 @@ let validate (problemNumber : int) (func : string -> string) input expectedOutpu
         | output -> "FAIL (" + output + "/" + expectedOutput + ")";
     )
     |> Console.WriteLine
-
-//do validate 26 problem26 "1000" ""
 
 do validate 1 problem1 "10" "23"
 do validate 1 problem1 "1000" "233168"
@@ -327,3 +344,5 @@ do validate 21 problem21 "10000" "31626"
 // do validate 24 problem24 "1000000" "2783915460"
 do validate 25 problem25 "1000" "4782"
 do validate 27 problem27 "1000" "-59231"
+do validate 28 problem28 "2" "101"
+do validate 28 problem28 "500" "669171001"
