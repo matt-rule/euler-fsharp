@@ -299,6 +299,17 @@ let problem29 input =
     |> Seq.length
     |> string
 
+let digits n = n |> string |> Seq.map (string >> int)
+
+let problem30 input =
+    let n = Int32.Parse input
+    let max = (pown 9 n)*n
+
+    {2..max}
+    |> Seq.where (fun x -> x = (x |> digits |> Seq.sumBy(fun y -> (pown y n))))
+    |> Seq.sum
+    |> string
+
 let validate (problemNumber : int) (func : string -> string) input expectedOutput =
     "Problem "
     + (String.Concat problemNumber)
@@ -359,3 +370,5 @@ do validate 28 problem28 "2" "101"
 do validate 28 problem28 "500" "669171001"
 do validate 29 problem29 "5" "15"
 do validate 29 problem29 "100" "9183"
+do validate 30 problem30 "4" "19316"
+do validate 30 problem30 "5" "443839"
