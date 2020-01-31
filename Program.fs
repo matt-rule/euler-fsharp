@@ -91,9 +91,9 @@ let problem7 n =
 let problem9 input =
     let n = Int32.Parse input
     seq {
-        for x in seq { 1..n } do
-        for y in seq { x+1..n } do
-        for z in seq { y+1..n } do
+        for x in 1..n  do
+        for y in x+1..n do
+        for z in y+1..n do
         if (x*x + y*y = z*z) && (x + y + z = 1000)
         then yield (x * y * z)
     }
@@ -213,7 +213,7 @@ let problem24 input =
     |> Seq.take 1
     |> Seq.head
 
-let problem25 input = 
+let problem25 input =
     let n = Int32.Parse input
     let fibonacci = Seq.unfold(fun (x, y) -> Some(x + y, (y, x + y))) (0I, 1I)
     let indexedFibonacci = fibonacci |> Seq.zip (Seq.initInfinite(fun x -> x + 1) |> Seq.skip 1)
@@ -245,6 +245,29 @@ let problem25 input =
 //     |> Seq.maxBy (snd x)
 //     |> fst
 //     |> string
+
+let problem27 input =
+    let cap = Int32.Parse input
+    let isPrime n =
+        (n > 0)
+        && seq { 2..(n |> (float >> sqrt >> int)) }
+        |> Seq.forall (fun x -> n % x <> 0)
+    let result =
+        seq {
+            for a in -(cap-1)..(cap-1) do
+            for b in -cap..cap do
+                yield (
+                    (a*b),
+                    (
+                        Seq.initInfinite(fun x -> x + 1)
+                        |> Seq.find(fun n -> (n*n + a*n + b) |> (isPrime >> not))
+                    )
+                )
+        }
+        |> Seq.maxBy(fun (x, y) -> y)
+    result
+    |> fst
+    |> string
 
 let validate (problemNumber : int) (func : string -> string) input expectedOutput =
     "Problem "
@@ -302,4 +325,5 @@ do validate 21 problem21 "10000" "31626"
 // do validate 23 problem23 "28123" "0"
 // TODO: Optimise
 // do validate 24 problem24 "1000000" "2783915460"
-do validate 25 problem25 "1000" ""
+do validate 25 problem25 "1000" "4782"
+do validate 27 problem27 "1000" "-59231"
