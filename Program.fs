@@ -1,24 +1,21 @@
 ﻿open System
 
 let problem1 n =
-    let input = Int32.Parse n
-    seq { 1..input-1 }
+    seq { 1..n-1 }
     |> Seq.where(fun x -> x % 3 = 0 || x % 5 = 0)
     |> Seq.sum
     |> string
 
 let problem2 n =
-    let input = Int32.Parse n
     Seq.unfold(fun (x, y) -> Some(x + y, (y, x + y))) (0, 1)
-    |> Seq.takeWhile(fun x -> x <= input)
+    |> Seq.takeWhile(fun x -> x <= n)
     |> Seq.where(fun x -> x % 2 = 0)
     |> Seq.sum
     |> string
 
 // Check whether this handles 12 correctly because 2 is a prime factor of it twice (2 squared = 4).
 let problem3 n =
-    let input = Int64.Parse n
-    input
+    n
     |> Seq.unfold(fun x ->
         if x = 1L then None else
             let y = seq { 2L..x } |> Seq.find(fun y -> x % y = 0L)
@@ -29,9 +26,8 @@ let problem3 n =
 
 
 let problem4 n =
-    let input = Int32.Parse n
     let max =
-        Seq.replicate input 9
+        Seq.replicate n 9
         |> String.Concat
         |> Int32.Parse
     seq { 1..max }
@@ -47,20 +43,18 @@ let problem4 n =
 // Takes a while. Try to optimise later. For example, could try to convert to string only once we have a value in a variable.
 // Though it would be surprising if it didn't do this already.
 let problem5 n =
-    let input = Int32.Parse n
     Seq.initInfinite(fun x -> x + 1)
     |> Seq.where (fun x ->
-        seq {1..input}
+        seq {1..n}
         |> Seq.forall(fun y -> x % y = 0)
     )
     |> Seq.head
     |> string
 
 let problem6 n =
-    let input = Int32.Parse n
     let naturalNumbers =
         Seq.initInfinite(fun x -> x + 1)
-        |> Seq.take input
+        |> Seq.take n
     let sumOfSquares = Seq.sumBy (fun x -> x*x) naturalNumbers
     let squareOfSum = pown (Seq.sum naturalNumbers) 2
     abs(sumOfSquares - squareOfSum)
@@ -79,17 +73,15 @@ let isPrime64 l =
     )
 
 let problem7 n =
-    let input = Int32.Parse n
     let naturalNumbers = Seq.initInfinite(fun x -> x + 1)
     naturalNumbers
     |> Seq.where isPrime
     |> Seq.zip naturalNumbers
-    |> Seq.find(fun (x, y) -> x = input)
+    |> Seq.find(fun (x, y) -> x = n)
     |> snd
     |> string
 
-let problem9 input =
-    let n = Int32.Parse input
+let problem9 n =
     seq {
         for x in 1..n  do
         for y in x+1..n do
@@ -101,14 +93,12 @@ let problem9 input =
     |> string
 
 let problem10 n =
-    let input = Int64.Parse n
-    seq {2L..input}
+    seq {2L..n}
     |> Seq.where isPrime64
     |> Seq.sum
     |> string
     
 let problem12 n =
-    let input = Int32.Parse n
     // Triangular numbers.
     Seq.unfold(fun (acc, n) -> Some(acc + n, (acc + n, n + 1))) (0, 1)
     |> Seq.find(fun x ->
@@ -116,12 +106,11 @@ let problem12 n =
         // This might count the square root twice
         seq {1..x |> (float >> sqrt >> int)}
         |> Seq.where(fun y -> x % y = 0)
-        |> Seq.length > input / 2
+        |> Seq.length > n / 2
     )
     |> string
     
 let problem14 n =
-    let input = Int64.Parse n
     // Collatz sequence.
     let collatzSequence = Seq.unfold(fun x ->
         if x = 1L then None else
@@ -130,14 +119,13 @@ let problem14 n =
             (next, next)
         )
     )
-    seq {1L..input-1L}
+    seq {1L..n-1L}
     |> Seq.map(fun x -> (x, x |> collatzSequence |> Seq.length))
     |> Seq.fold(fun (x : int64 * int) (y : int64 * int) -> if (snd x) > (snd y) then x else y) (1L, 1)
     |> fst
     |> string
     
-let problem15 input =
-    let n = Int32.Parse input
+let problem15 n =
     let rec countLattice state step maxStep =
         if step = maxStep
         then
@@ -160,14 +148,12 @@ let problem15 input =
 let rec nest p f x = if p=0 then x else nest (p-1) f (f x)
 let sumOfDigits = string >> Seq.sumBy (string >> Int32.Parse)
 
-let problem16 input =
-    let n = Int32.Parse input
+let problem16 n =
     nest n ((*) 2I) 1I
     |> sumOfDigits
     |> string
 
-let problem20 input =
-    let n = Int32.Parse input
+let problem20 (n : int32) =
     seq {1I .. bigint n}
     |> Seq.fold (fun x y -> bigint.Multiply (x, y)) 1I
     |> sumOfDigits
@@ -178,15 +164,13 @@ let sumOfProperDivisors n =
     |> Seq.where(fun y -> n % y = 0)
     |> Seq.sum
 
-let problem21 input =
-    let n = Int32.Parse input
+let problem21 n =
     seq {1..n-1}
     |> Seq.where(fun x -> (sumOfProperDivisors >> sumOfProperDivisors) x = x && sumOfProperDivisors x <> x)
     |> Seq.sum
     |> string
 
-let problem23 input =
-    let n = Int32.Parse input
+let problem23 n =
     let abundantNumbers = 
         seq {1..n}
         |> Seq.where (fun x -> sumOfProperDivisors x > x)
@@ -197,9 +181,8 @@ let problem23 input =
     |> Seq.sum
     |> string
 
-let problem24 input =
+let problem24 n =
     // We want to obtain the nth permutation.
-    let n = Int32.Parse input
     // Define a recursive function to generate a sequence
     let rec getPermutationsWithPDigits (s : string) (p : int) : string seq =
         seq {
@@ -213,8 +196,7 @@ let problem24 input =
     |> Seq.take 1
     |> Seq.head
 
-let problem25 input =
-    let n = Int32.Parse input
+let problem25 n =
     let fibonacci = Seq.unfold(fun (x, y) -> Some(x + y, (y, x + y))) (0I, 1I)
     let indexedFibonacci = fibonacci |> Seq.zip (Seq.initInfinite(fun x -> x + 1) |> Seq.skip 1)
     indexedFibonacci
@@ -253,8 +235,7 @@ let problem25 input =
 // Maxby seems very useful for simplifying structure
 // You can reduce the line count by declaring a function further up,
 // then avoiding brackets around it when using it
-let problem27 input =
-    let cap = Int32.Parse input
+let problem27 cap =
     let isPrime n =
         (n > 0)
         && { 2..(n |> (float >> sqrt >> int)) }
@@ -277,8 +258,7 @@ let problem27 input =
 //  4   24  76  160 276
 //      20  52  84  116
 //          32  32  32
-let problem28 input =
-    let n = Int32.Parse input
+let problem28 n =
     Seq.initInfinite (fun _ -> 32)
     |> Seq.scan (+) 20
     |> Seq.scan (+) 4
@@ -288,8 +268,7 @@ let problem28 input =
     |> (+) 1
     |> string
 
-let problem29 input =
-    let n = Int32.Parse input
+let problem29 (n : int32) =
     seq {
         for a in 2I..(bigint n) do
         for b in 2..n do
@@ -301,8 +280,7 @@ let problem29 input =
 
 let digits n = n |> string |> Seq.map (string >> int)
 
-let problem30 input =
-    let n = Int32.Parse input
+let problem30 n =
     let max = (pown 9 n)*n
 
     {2..max}
@@ -310,65 +288,65 @@ let problem30 input =
     |> Seq.sum
     |> string
 
-let validate (problemNumber : int) (func : string -> string) input expectedOutput =
+let validate (problemNumber : int) actualOutput expectedOutput =
     "Problem "
     + (String.Concat problemNumber)
     + ". "
     + (
-        match (func input) with
+        match actualOutput with
         | output when output = expectedOutput -> "PASS (" + output + ")";
         | output -> "FAIL (" + output + "/" + expectedOutput + ")";
     )
     |> Console.WriteLine
 
-do validate 1 problem1 "10" "23"
-do validate 1 problem1 "1000" "233168"
-do validate 2 problem2 "100" "44"
-do validate 2 problem2 "4000000" "4613732"
-do validate 3 problem3 "13195" "29"
-do validate 3 problem3 "600851475143" "6857"
-do validate 4 problem4 "2" "9009"
-do validate 4 problem4 "3" "906609"
+do validate 1 (problem1 10) "23"
+do validate 1 (problem1 1000) "233168"
+do validate 2 (problem2 100) "44"
+do validate 2 (problem2 4000000) "4613732"
+do validate 3 (problem3 13195L) "29"
+do validate 3 (problem3 600851475143L) "6857"
+do validate 4 (problem4 2) "9009"
+do validate 4 (problem4 3) "906609"
 // TODO: Calculate 5 using prime factors.
 // do validate 5 problem5 "10" "2520"
 // do validate 5 problem5 "20" "232792560"
-do validate 6 problem6 "10" "2640"
-do validate 6 problem6 "100" "25164150"
-do validate 7 problem7 "6" "13"
-do validate 7 problem7 "10001" "104743"
+do validate 6 (problem6 10) "2640"
+do validate 6 (problem6 100) "25164150"
+do validate 7 (problem7 6) "13"
+do validate 7 (problem7 10001) "104743"
 // Skip 8 due to large input.
 // Skip 9 because it takes a long time.
-do validate 9 problem9 "1000" "31875000"
-do validate 10 problem10 "10" "17"
+do validate 9 (problem9 1000) "31875000"
+do validate 10 (problem10 10L) "17"
 // Skip this because it's too slow.
 // do validate 10 problem10 "2000000" "142913828922"
 // Skip 11 due to large input.
-do validate 12 problem12 "5" "28"
-do validate 12 problem12 "500" "76576500"
+do validate 12 (problem12 5) "28"
+do validate 12 (problem12 500) "76576500"
 // Skip 13 due to large input.
 // TODO: Validation for 14 is to make sure the sequence from 13 to 1 contains 10 terms.
 // Skip 14 because it takes a long time.
 // do validate 14 problem14 "1000000" "837799"
-do validate 15 problem15 "2" "6"
-do validate 15 problem15 "20" "137846528820"
-do validate 16 problem16 "15" "26"
-do validate 16 problem16 "1000" "1366"
+do validate 15 (problem15 2) "6"
+do validate 15 (problem15 20) "137846528820"
+do validate 16 (problem16 15) "26"
+do validate 16 (problem16 1000) "1366"
 
 // Skip 17-19 due to large input.
-do validate 20 problem20 "10" "27"
-do validate 20 problem20 "100" "648"
+do validate 20 (problem20 10) "27"
+do validate 20 (problem20 100) "648"
 // No first part for 21.
-do validate 21 problem21 "10000" "31626"
+do validate 21 (problem21 10000) "31626"
 // Skip 22 due to large input.
 // TODO: Optimise 23.
 // do validate 23 problem23 "28123" "0"
 // TODO: Optimise
 // do validate 24 problem24 "1000000" "2783915460"
-do validate 25 problem25 "1000" "4782"
-do validate 27 problem27 "1000" "-59231"
-do validate 28 problem28 "2" "101"
-do validate 28 problem28 "500" "669171001"
-do validate 29 problem29 "5" "15"
-do validate 29 problem29 "100" "9183"
-do validate 30 problem30 "4" "19316"
-do validate 30 problem30 "5" "443839"
+do validate 25 (problem25 1000) "4782"
+do validate 27 (problem27 1000) "-59231"
+do validate 28 (problem28 2) "101"
+do validate 28 (problem28 500) "669171001"
+do validate 29 (problem29 5) "15"
+do validate 29 (problem29 100) "9183"
+do validate 30 (problem30 4) "19316"
+do validate 30 (problem30 5) "443839"
