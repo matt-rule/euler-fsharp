@@ -8,7 +8,7 @@ let problem1 n =
 
 let problem2 n =
     Seq.unfold(fun (x, y) -> Some(x + y, (y, x + y))) (0, 1)
-    |> Seq.takeWhile(fun x -> x <= n)
+    |> Seq.takeWhile (fun x -> x <= n)
     |> Seq.where(fun x -> x % 2 = 0)
     |> Seq.sum
     |> string
@@ -43,7 +43,7 @@ let problem4 n =
 // Takes a while. Try to optimise later. For example, could try to convert to string only once we have a value in a variable.
 // Though it would be surprising if it didn't do this already.
 let problem5 n =
-    Seq.initInfinite(fun x -> x + 1)
+    Seq.initInfinite((+) 1)
     |> Seq.where (fun x ->
         {1..n}
         |> Seq.forall(fun y -> x % y = 0)
@@ -53,9 +53,9 @@ let problem5 n =
 
 let problem6 n =
     let naturalNumbers =
-        Seq.initInfinite(fun x -> x + 1)
+        Seq.initInfinite((+) 1)
         |> Seq.take n
-    let sumOfSquares = Seq.sumBy (fun x -> x*x) naturalNumbers
+    let sumOfSquares = Seq.sumBy ((fun x -> x*x)) naturalNumbers
     let squareOfSum = pown (Seq.sum naturalNumbers) 2
     abs(sumOfSquares - squareOfSum)
     |> string
@@ -73,7 +73,7 @@ let isPrime64 l =
     )
 
 let problem7 n =
-    let naturalNumbers = Seq.initInfinite(fun x -> x + 1)
+    let naturalNumbers = Seq.initInfinite((+) 1)
     naturalNumbers
     |> Seq.where isPrime
     |> Seq.zip naturalNumbers
@@ -200,7 +200,7 @@ let problem24 n =
 
 let problem25 n =
     let fibonacci = Seq.unfold(fun (x, y) -> Some(x + y, (y, x + y))) (0I, 1I)
-    let indexedFibonacci = fibonacci |> Seq.zip (Seq.initInfinite(fun x -> x + 1) |> Seq.skip 1)
+    let indexedFibonacci = fibonacci |> Seq.zip (Seq.initInfinite((+) 1) |> Seq.skip 1)
     indexedFibonacci
     |> Seq.map (fun (x, y) -> (x, string y))
     |> Seq.find(fun (x, y) -> y.Length >= n)
