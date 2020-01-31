@@ -1,7 +1,7 @@
 ﻿open System
 
 let problem1 n =
-    seq { 1..n-1 }
+    {1..n-1}
     |> Seq.where(fun x -> x % 3 = 0 || x % 5 = 0)
     |> Seq.sum
     |> string
@@ -18,7 +18,7 @@ let problem3 n =
     n
     |> Seq.unfold(fun x ->
         if x = 1L then None else
-            let y = seq { 2L..x } |> Seq.find(fun y -> x % y = 0L)
+            let y = {2L..x} |> Seq.find(fun y -> x % y = 0L)
             Some(y, x / y)
     )
     |> Seq.max
@@ -30,9 +30,9 @@ let problem4 n =
         Seq.replicate n 9
         |> String.Concat
         |> Int32.Parse
-    seq { 1..max }
+    {1..max}
     |> Seq.collect(fun x ->
-        seq { x+1..max }
+        {x+1..max}
         |> Seq.map (fun y -> x*y |> string)
         |> Seq.where (fun y -> y = (y |> seq |> Seq.rev |> String.Concat))
         |> Seq.map(Int32.Parse)
@@ -45,7 +45,7 @@ let problem4 n =
 let problem5 n =
     Seq.initInfinite(fun x -> x + 1)
     |> Seq.where (fun x ->
-        seq {1..n}
+        {1..n}
         |> Seq.forall(fun y -> x % y = 0)
     )
     |> Seq.head
@@ -93,18 +93,20 @@ let problem9 n =
     |> string
 
 let problem10 n =
-    seq {2L..n}
+    {2L..n}
     |> Seq.where isPrime64
     |> Seq.sum
     |> string
-    
+
+let intSqrt = float >> sqrt >> int
+
 let problem12 n =
     // Triangular numbers.
     Seq.unfold(fun (acc, n) -> Some(acc + n, (acc + n, n + 1))) (0, 1)
     |> Seq.find(fun x ->
         // Get all divisors for x up to sqrt(x)
         // This might count the square root twice
-        seq {1..x |> (float >> sqrt >> int)}
+        {1..(intSqrt x)}
         |> Seq.where(fun y -> x % y = 0)
         |> Seq.length > n / 2
     )
@@ -119,7 +121,7 @@ let problem14 n =
             (next, next)
         )
     )
-    seq {1L..n-1L}
+    {1L..n-1L}
     |> Seq.map(fun x -> (x, x |> collatzSequence |> Seq.length))
     |> Seq.fold(fun (x : int64 * int) (y : int64 * int) -> if (snd x) > (snd y) then x else y) (1L, 1)
     |> fst
@@ -136,13 +138,13 @@ let problem15 n =
                 (
                     if (step <= maxStep / 2)
                     then
-                        (Seq.concat [seq {1L..1L}; (state |> Seq.pairwise |> Seq.map(fun (x, y) -> x + y)); seq {1L..1L}])
+                        (Seq.concat [{1L..1L}; (state |> Seq.pairwise |> Seq.map(fun (x, y) -> x + y)); {1L..1L}])
                     else
                         (state |> Seq.pairwise |> Seq.map(fun (x, y) -> x + y))
                 )
                 (step + 1)
                 maxStep
-    (countLattice (seq{1L..1L}) 1 (n*2))
+    (countLattice {1L..1L} 1 (n*2))
     |> string
 
 let rec nest p f x = if p=0 then x else nest (p-1) f (f x)
@@ -154,29 +156,29 @@ let problem16 n =
     |> string
 
 let problem20 (n : int32) =
-    seq {1I .. bigint n}
+    {1I..(bigint n)}
     |> Seq.fold (fun x y -> bigint.Multiply (x, y)) 1I
     |> sumOfDigits
     |> string
 
 let sumOfProperDivisors n =
-    seq {1..(n-1)}
+    {1..n-1}
     |> Seq.where(fun y -> n % y = 0)
     |> Seq.sum
 
 let problem21 n =
-    seq {1..n-1}
+    {1..n-1}
     |> Seq.where(fun x -> (sumOfProperDivisors >> sumOfProperDivisors) x = x && sumOfProperDivisors x <> x)
     |> Seq.sum
     |> string
 
 let problem23 n =
     let abundantNumbers = 
-        seq {1..n}
+        {1..n}
         |> Seq.where (fun x -> sumOfProperDivisors x > x)
         |> Seq.toArray
     let canBeWrittenAsTheSumOfTwoAbundantNumbers p = abundantNumbers |> Array.exists(fun x -> Array.contains (p - x) abundantNumbers)
-    seq {1..n}
+    {1..n}
     |> Seq.where(canBeWrittenAsTheSumOfTwoAbundantNumbers >> not)
     |> Seq.sum
     |> string
@@ -186,7 +188,7 @@ let problem24 n =
     // Define a recursive function to generate a sequence
     let rec getPermutationsWithPDigits (s : string) (p : int) : string seq =
         seq {
-            for i in seq {0..9} |> Seq.where (string >> s.Contains >> not) do 
+            for i in {0..9} |> Seq.where (string >> s.Contains >> not) do 
             match p with
             | 1 -> yield (s + (string i))
             | _ -> yield! (getPermutationsWithPDigits (s + (string i)) (p - 1))
@@ -210,7 +212,7 @@ let problem25 n =
 //     // [ 1..100 ] |> Seq.map((decimal) >> (fun x -> 1.0M / x) >> string) |> Seq.iter (printfn "%s")
 //     // ""
 //     let n = Int32.Parse input
-//     seq {1..n-1}
+//     {1..n-1}
 //     |> Seq.map (
 //         fun x ->
 //         (
@@ -228,7 +230,8 @@ let problem25 n =
 //     |> fst
 //     |> string
 
-// Sequences can be {1..n} instead of seq {1..n}.
+// Some type annotations can be removed
+// Some sequences can be {1..n} instead of seq {1..n}.
 // A lot of lambda functions can be simplified for example
 // Seq.initInfinite((+) 1) instead of Seq.initInfinite(fun x -> x + 1)
 // and Seq.maxBy snd instead of Seq.maxBy(fun x -> snd x)
