@@ -294,6 +294,33 @@ let problem30 n =
     |> Seq.sum
     |> string
 
+let problem32 =
+    let rec getPermutationsOneToNine (s : string) p =
+        seq {
+            for i in {1..9} |> Seq.where (string >> s.Contains >> not) do 
+            match p with
+            | 1 -> yield (s + (string i))
+            | _ -> yield! (getPermutationsOneToNine (s + (string i)) (p - 1))
+        }
+    let skipTakeDigits x y = Seq.skip x >> Seq.take y >> stringConcatFromCharSeq >> int
+    let allPermutations = (getPermutationsOneToNine "" 9)
+    allPermutations
+    |> Seq.collect(fun x ->
+        seq {
+            for productDigits in {3..7} do
+            for multiplierDigits in {1..(8-productDigits)} do
+            let multiplicandDigits = 9 - productDigits - multiplierDigits
+            let multiplicand = x |> skipTakeDigits 0 multiplicandDigits
+            let multiplier = x |> skipTakeDigits multiplicandDigits multiplierDigits
+            let product = x |> skipTakeDigits (multiplicandDigits + multiplierDigits) productDigits
+            if (multiplicand * multiplier = product)
+            then yield product
+        }
+    )
+    |> Seq.distinct
+    |> Seq.sum
+    |> string
+
 let problem48 n =
     {1..n}
     |> Seq.sumBy (fun x -> (bigint x) ** x)
@@ -363,6 +390,7 @@ do validate 29 (problem29 5) "15"
 do validate 29 (problem29 100) "9183"
 do validate 30 (problem30 4) "19316"
 do validate 30 (problem30 5) "443839"
+do validate 32 problem32 "45228"
 
 do validate 48 (problem48 10) "0405071317"
 do validate 48 (problem48 1000) "9110846700"
