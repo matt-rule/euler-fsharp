@@ -66,13 +66,13 @@ let problem6 n =
 let isPrime x =
     x > 1 && (
         {2..(float >> sqrt >> int) x}
-        |> Seq.forall (fun y -> x % y <> 0)
+        |> Seq.forall (fun y -> x % y <> 0)         // Consider (fun y -> x % y <> LanguagePrimitives.GenericZero)
     )
 
 let isPrime64 l =
     l > 1L && (
         {2L..(float >> sqrt >> int64) l}
-        |> Seq.forall (fun y -> l % y <> 0L)
+        |> Seq.forall (fun y -> l % y <> 0L)        // Consider (fun y -> x % y <> LanguagePrimitives.GenericZero)
     )
 
 let problem7 n =
@@ -294,31 +294,74 @@ let problem30 n =
     |> Seq.sum
     |> string
 
-let problem32 =
-    let rec getPermutationsOneToNine (s : string) p =
-        seq {
-            for i in {1..9} |> Seq.where (string >> s.Contains >> not) do 
-            match p with
-            | 1 -> yield (s + (string i))
-            | _ -> yield! (getPermutationsOneToNine (s + (string i)) (p - 1))
-        }
-    let skipTakeDigits x y = Seq.skip x >> Seq.take y >> stringConcatFromCharSeq >> int
-    let allPermutations = (getPermutationsOneToNine "" 9)
-    allPermutations
-    |> Seq.collect(fun x ->
-        seq {
-            for productDigits in {3..7} do
-            for multiplierDigits in {1..(8-productDigits)} do
-            let multiplicandDigits = 9 - productDigits - multiplierDigits
-            let multiplicand = x |> skipTakeDigits 0 multiplicandDigits
-            let multiplier = x |> skipTakeDigits multiplicandDigits multiplierDigits
-            let product = x |> skipTakeDigits (multiplicandDigits + multiplierDigits) productDigits
-            if (multiplicand * multiplier = product)
-            then yield product
-        }
-    )
-    |> Seq.distinct
-    |> Seq.sum
+// let problem32 =
+//     let rec getPermutationsOneToNine (s : string) p =
+//         seq {
+//             for i in {1..9} |> Seq.where (string >> s.Contains >> not) do 
+//             match p with
+//             | 1 -> yield (s + (string i))
+//             | _ -> yield! (getPermutationsOneToNine (s + (string i)) (p - 1))
+//         }
+//     let skipTakeDigits x y = Seq.skip x >> Seq.take y >> stringConcatFromCharSeq >> int
+//     let allPermutations = (getPermutationsOneToNine "" 9)
+//     allPermutations
+//     |> Seq.collect(fun x ->
+//         seq {
+//             for productDigits in {3..7} do
+//             for multiplierDigits in {1..(8-productDigits)} do
+//             let multiplicandDigits = 9 - productDigits - multiplierDigits
+//             let multiplicand = x |> skipTakeDigits 0 multiplicandDigits
+//             let multiplier = x |> skipTakeDigits multiplicandDigits multiplierDigits
+//             let product = x |> skipTakeDigits (multiplicandDigits + multiplierDigits) productDigits
+//             if (multiplicand * multiplier = product)
+//             then yield product
+//         }
+//     )
+//     |> Seq.distinct
+//     |> Seq.sum
+//     |> string
+
+// let problem33 =
+//     let twoDigitFractions =
+//         seq {
+//             for x in 10..99 do
+//             for y in x..99 do                   // consider using x+1 instead
+//             yield (x, y)
+//         }
+    
+
+//         // let x1 = digits x |> Seq.head
+//         // let x2 = digits x |> Seq.skip 1 |> Seq.head
+//         // let y1 = digits y |> Seq.head
+//         // let y2 = digits y |> Seq.skip 1 |> Seq.head
+//         // let a1, a2 =
+//         //     if (x1 = y1)
+//         //     then
+//         //         5, 6
+//         //     else
+//         //         7, 8
+//         // yield 5
+
+let problem35 n =
+    let isCircularPrime x =
+        if (x |> isPrime |> not) then
+            false
+        else
+            let digitsX = digits x
+            let numDigits = (digitsX |> Seq.length) - 1
+            {1..numDigits}
+            |> Seq.forall (fun y ->
+                Seq.concat [
+                    (digitsX |> Seq.skip y);
+                    (digitsX |> Seq.take y)
+                ]
+                |> stringConcatFromIntSeq
+                |> int
+                |> isPrime
+            )
+    {2..n-1}
+    |> Seq.where isCircularPrime
+    |> Seq.length
     |> string
 
 let problem48 n =
@@ -332,12 +375,15 @@ let validate (problemNumber : int) actualOutput expectedOutput =
     "Problem "
     + (string problemNumber)
     + ". "
-    + (
-        match actualOutput with
-        | output when output = expectedOutput -> "PASS (" + output + ")";
-        | output -> "FAIL (" + output + "/" + expectedOutput + ")";
-    )
+    +   match expectedOutput with
+        | null -> "ATTEMPT (" + actualOutput + ")";
+        | expected ->
+            match actualOutput with
+            | output when output = expected -> "PASS (" + output + ")";
+            | output -> "FAIL (" + output + "/" + expected + ")";
     |> printfn "%s"
+
+do validate 35 (problem35 1000000) "13"
 
 do validate 1 (problem1 10) "23"
 do validate 1 (problem1 1000) "233168"
@@ -390,7 +436,8 @@ do validate 29 (problem29 5) "15"
 do validate 29 (problem29 100) "9183"
 do validate 30 (problem30 4) "19316"
 do validate 30 (problem30 5) "443839"
-do validate 32 problem32 "45228"
+// TODO: Optimise 32.
+// do validate 32 problem32 "45228"
 
 do validate 48 (problem48 10) "0405071317"
 do validate 48 (problem48 1000) "9110846700"
