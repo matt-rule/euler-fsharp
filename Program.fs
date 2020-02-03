@@ -368,6 +368,23 @@ let problem36 n =
     |> Seq.sum
     |> string
 
+let truncatableInBothDirections n =
+    let nStr = string n
+    {1..((nStr |> String.length) - 1)}
+    |> Seq.forall(fun x ->
+        nStr |> Seq.take x |> stringConcatFromCharSeq |> int |> isPrime
+        && nStr |> Seq.skip x |> stringConcatFromCharSeq |> int |> isPrime
+    )
+
+let problem37 =
+    {11..1000000}
+    |> Seq.where isPrime
+    |> Seq.where truncatableInBothDirections
+    |> Seq.take 11
+    |> Seq.toList
+    |> Seq.sum
+    |> string
+
 let problem48 n =
     {1..n}
     |> Seq.sumBy (fun x -> (bigint x) ** x)
@@ -387,7 +404,7 @@ let validate (problemNumber : int) actualOutput expectedOutput =
             | output -> "FAIL (" + output + "/" + expected + ")";
     |> printfn "%s"
 
-do validate 36 (problem36 1000000) ""
+do problem37 |> printfn "%s"
 
 do validate 1 (problem1 10) "23"
 do validate 1 (problem1 1000) "233168"
@@ -446,6 +463,7 @@ do validate 30 (problem30 5) "443839"
 // do validate 32 problem32 "45228"
 do validate 35 (problem35 100) "13"
 do validate 35 (problem35 1000000) "55"
+do validate 36 (problem36 1000000) "872187"
 
 do validate 48 (problem48 10) "0405071317"
 do validate 48 (problem48 1000) "9110846700"
