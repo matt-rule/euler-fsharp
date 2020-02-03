@@ -210,7 +210,22 @@ let problem25 n =
     |> fst
     |> string
 
-// let problem26 input =
+// The only state we need to persist is the remainder; we throw
+// away the actual result of the division.
+// Note that if the remainder becomes 0, the next iteration will be 0
+// and it will report a cycle of size 1. This doesn't matter for Problem 26.
+let rec recurringCycleIteration accumulatedList divisor =
+    let tenLastRemainder = List.last accumulatedList*10
+    let remainder = tenLastRemainder - (int (tenLastRemainder/divisor))*divisor
+    let index = accumulatedList |> List.tryFindIndex ((=) remainder)
+    if index.IsSome
+    then List.length accumulatedList - index.Value
+    else recurringCycleIteration (accumulatedList @ [remainder]) divisor
+
+let problem26 n =
+    {2..n-1}
+    |> Seq.maxBy (recurringCycleIteration [1])
+    |> string
     
 //     // [ 1..100 ] |> Seq.map((decimal) >> (fun x -> 1.0M / x) >> string) |> Seq.iter (printfn "%s")
 //     // ""
@@ -383,8 +398,6 @@ let validate (problemNumber : int) actualOutput expectedOutput =
             | output -> "FAIL (" + output + "/" + expected + ")";
     |> printfn "%s"
 
-do validate 35 (problem35 1000000) "13"
-
 do validate 1 (problem1 10) "23"
 do validate 1 (problem1 1000) "233168"
 do validate 2 (problem2 100) "44"
@@ -429,6 +442,8 @@ do validate 21 (problem21 10000) "31626"
 // TODO: Optimise
 // do validate 24 problem24 "1000000" "2783915460"
 do validate 25 (problem25 1000) "4782"
+do validate 26 (problem26 10) "7"
+do validate 26 (problem26 1000) "983"
 do validate 27 (problem27 1000) "-59231"
 do validate 28 (problem28 2) "101"
 do validate 28 (problem28 500) "669171001"
@@ -438,6 +453,8 @@ do validate 30 (problem30 4) "19316"
 do validate 30 (problem30 5) "443839"
 // TODO: Optimise 32.
 // do validate 32 problem32 "45228"
+do validate 35 (problem35 100) "13"
+do validate 35 (problem35 1000000) "55"
 
 do validate 48 (problem48 10) "0405071317"
 do validate 48 (problem48 1000) "9110846700"
