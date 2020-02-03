@@ -226,27 +226,6 @@ let problem26 n =
     {2..n-1}
     |> Seq.maxBy (recurringCycleIteration [1])
     |> string
-    
-//     // [ 1..100 ] |> Seq.map((decimal) >> (fun x -> 1.0M / x) >> string) |> Seq.iter (printfn "%s")
-//     // ""
-//     let n = Int32.Parse input
-//     {1..n-1}
-//     |> Seq.map (
-//         fun x ->
-//         (
-//             x,
-//             Seq.map(
-//                 (decimal
-//                 >> (fun y -> 1.0M / y)
-//                 >> string
-//                 >> (fun y -> Seq.take y.Length - 1)
-//                 ) |> 
-//             x to a number of decimal places
-//         )
-//     )
-//     |> Seq.maxBy (snd x)
-//     |> fst
-//     |> string
 
 // Some type annotations can be removed
 // Some sequences can be {1..n} instead of seq {1..n}.
@@ -379,6 +358,16 @@ let problem35 n =
     |> Seq.length
     |> string
 
+let problem36 n =
+    let isPalindrome s = s = (s |> Seq.rev |> stringConcatFromCharSeq)
+    {1..n-1}
+    |> Seq.where (fun x ->
+        isPalindrome (System.Convert.ToString(x, 2))
+        && isPalindrome (System.Convert.ToString(x, 10))
+    )
+    |> Seq.sum
+    |> string
+
 let problem48 n =
     {1..n}
     |> Seq.sumBy (fun x -> (bigint x) ** x)
@@ -397,6 +386,8 @@ let validate (problemNumber : int) actualOutput expectedOutput =
             | output when output = expected -> "PASS (" + output + ")";
             | output -> "FAIL (" + output + "/" + expected + ")";
     |> printfn "%s"
+
+do validate 36 (problem36 1000000) ""
 
 do validate 1 (problem1 10) "23"
 do validate 1 (problem1 1000) "233168"
