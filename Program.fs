@@ -380,9 +380,26 @@ let problem37 =
     {11..1000000}
     |> Seq.where isPrime
     |> Seq.where truncatableInBothDirections
-    |> Seq.take 11
+    |> Seq.take 11      // This 11 and the 11 at the top of this function have nothing to do with each other.
     |> Seq.toList
     |> Seq.sum
+    |> string
+
+let problem38 =
+    let panDigitalOneToNine s = {'1'..'9'} |> Seq.forall (fun x -> s |> Seq.contains x)
+    let numberStrings =
+        {1..99999}
+        |> Seq.collect (fun x ->
+            {1..9}
+            |> Seq.map (fun y ->
+                {1..y}
+                |> Seq.map (( * ) x >> string)
+                |> Seq.reduce (+)
+            )
+        )
+        |> Seq.where (fun x -> x.Length = 9 && panDigitalOneToNine x)
+    numberStrings
+    |> Seq.max
     |> string
 
 let problem48 n =
@@ -403,8 +420,6 @@ let validate (problemNumber : int) actualOutput expectedOutput =
             | output when output = expected -> "PASS (" + output + ")";
             | output -> "FAIL (" + output + "/" + expected + ")";
     |> printfn "%s"
-
-do problem37 |> printfn "%s"
 
 do validate 1 (problem1 10) "23"
 do validate 1 (problem1 1000) "233168"
@@ -464,6 +479,8 @@ do validate 30 (problem30 5) "443839"
 do validate 35 (problem35 100) "13"
 do validate 35 (problem35 1000000) "55"
 do validate 36 (problem36 1000000) "872187"
+do validate 37 problem37 "748317"
+do validate 38 problem38 "932718654"
 
 do validate 48 (problem48 10) "0405071317"
 do validate 48 (problem48 1000) "9110846700"
