@@ -402,6 +402,19 @@ let problem38 =
     |> Seq.max
     |> string
 
+let problem39 n =
+    {3..n-1}
+    |> Seq.maxBy (fun p ->
+        seq {
+            for c in 1..(p-2) do
+            for b in 1..(p-c-1) do
+            let a = p-c-b
+            if a*a+b*b=c*c then yield ()
+        }
+        |> Seq.length
+    )
+    |> string
+
 let problem48 n =
     {1..n}
     |> Seq.sumBy (fun x -> (bigint x) ** x)
@@ -481,6 +494,7 @@ do validate 35 (problem35 1000000) "55"
 do validate 36 (problem36 1000000) "872187"
 do validate 37 problem37 "748317"
 do validate 38 problem38 "932718654"
+do validate 39 (problem39 1000) "840"
 
 do validate 48 (problem48 10) "0405071317"
 do validate 48 (problem48 1000) "9110846700"
