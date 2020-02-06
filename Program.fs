@@ -402,6 +402,8 @@ let problem38 =
     |> Seq.max
     |> string
 
+// TODO: There has to be a better way to do anything than
+// by yielding a sequence of units to get the length of it.
 let problem39 n =
     {3..n-1}
     |> Seq.maxBy (fun p ->
@@ -413,6 +415,25 @@ let problem39 n =
         }
         |> Seq.length
     )
+    |> string
+
+let problem40 n =
+    let concatIntsSeq =
+        seq {
+            for i in Seq.initInfinite(fun x -> x + 1) do
+                for c in i |> string do
+                    yield c |> string |> int
+        }
+
+    {0..n}
+    |> Seq.map (fun x ->
+        ['1'] @ (Seq.replicate x '0' |> Seq.toList)
+        |> List.toSeq
+        |> stringConcatFromCharSeq
+        |> int
+        |> (fun y -> concatIntsSeq |> (Seq.item (y - 1)))
+    )
+    |> Seq.reduce (*)
     |> string
 
 let problem48 n =
@@ -495,6 +516,7 @@ do validate 36 (problem36 1000000) "872187"
 do validate 37 problem37 "748317"
 do validate 38 problem38 "932718654"
 do validate 39 (problem39 1000) "840"
+do validate 40 (problem40 6) "210"
 
 do validate 48 (problem48 10) "0405071317"
 do validate 48 (problem48 1000) "9110846700"
