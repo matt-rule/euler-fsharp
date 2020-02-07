@@ -446,8 +446,6 @@ let validate (problemNumber : int) actualOutput expectedOutput =
             | output -> "FAIL (" + output + "/" + expected + ")";
     |> printfn "%s"
 
-do validate 40 (problem40 6) "210"
-
 do validate 1 (problem1 10) "23"
 do validate 1 (problem1 1000) "233168"
 do validate 2 (problem2 100) "44"
