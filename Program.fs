@@ -418,21 +418,12 @@ let problem39 n =
     |> string
 
 let problem40 n =
-    let concatIntsSeq =
-        seq {
-            for i in Seq.initInfinite(fun x -> x + 1) do
-                for c in i |> string do
-                    yield c |> string |> int
-        }
-
+    let getDigitAtIndex i =
+        Seq.initInfinite(fun z -> z + 1)
+        |> Seq.collect digits
+        |> Seq.item i
     {0..n}
-    |> Seq.map (fun x ->
-        ['1'] @ (Seq.replicate x '0' |> Seq.toList)
-        |> List.toSeq
-        |> stringConcatFromCharSeq
-        |> int
-        |> (fun y -> concatIntsSeq |> (Seq.item (y - 1)))
-    )
+    |> Seq.map (pown 10 >> (+) -1 >> getDigitAtIndex)
     |> Seq.reduce (*)
     |> string
 
@@ -454,6 +445,8 @@ let validate (problemNumber : int) actualOutput expectedOutput =
             | output when output = expected -> "PASS (" + output + ")";
             | output -> "FAIL (" + output + "/" + expected + ")";
     |> printfn "%s"
+
+do validate 40 (problem40 6) "210"
 
 do validate 1 (problem1 10) "23"
 do validate 1 (problem1 1000) "233168"
