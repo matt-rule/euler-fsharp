@@ -427,6 +427,26 @@ let problem40 n =
     |> Seq.reduce (*)
     |> string
 
+let rec getPermutationsWithPDigitsBackwards max (s : string) p =
+    seq {
+        for i in {max .. -1 .. 1} |> Seq.where (string >> s.Contains >> not) do 
+        match p with
+        | 1 -> yield (s + (string i))
+        | _ -> yield! (getPermutationsWithPDigitsBackwards max (s + (string i)) (p - 1))
+    }
+
+let problem41 =
+    let isPandigital n =
+        let nStr = string n
+        {1..(String.length nStr)}
+        |> Seq.map (string >> Seq.head)
+        |> Seq.forall(fun x -> nStr |> Seq.contains x)
+    {9 .. -1 .. 1}
+    |> Seq.collect (fun x -> getPermutationsWithPDigitsBackwards x "" x)
+    |> Seq.map int
+    |> Seq.find (fun x -> isPrime x && isPandigital x)
+    |> string
+
 let problem48 n =
     {1..n}
     |> Seq.sumBy (fun x -> (bigint x) ** x)
@@ -508,6 +528,7 @@ do validate 37 problem37 "748317"
 do validate 38 problem38 "932718654"
 do validate 39 (problem39 1000) "840"
 do validate 40 (problem40 6) "210"
+do validate 41 problem41 "7652413"
 
 do validate 48 (problem48 10) "0405071317"
 do validate 48 (problem48 1000) "9110846700"
