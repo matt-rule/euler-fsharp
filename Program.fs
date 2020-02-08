@@ -75,6 +75,8 @@ let isPrime64 l =
         |> Seq.forall (fun y -> l % y <> 0L)        // Consider (fun y -> x % y <> LanguagePrimitives.GenericZero)
     )
 
+let primes = Seq.initInfinite((+) 1) |> Seq.where isPrime
+
 let problem7 n =
     let naturalNumbers = Seq.initInfinite((+) 1)
     naturalNumbers
@@ -186,16 +188,16 @@ let problem23 n =
     |> Seq.sum
     |> string
 
+let rec getPermutationsWithPDigits (s : string) p =
+    seq {
+        for i in {0..9} |> Seq.where (string >> s.Contains >> not) do 
+        match p with
+        | 1 -> yield (s + (string i))
+        | _ -> yield! (getPermutationsWithPDigits (s + (string i)) (p - 1))
+    }
+
 let problem24 n =
     // We want to obtain the nth permutation.
-    // Define a recursive function to generate a sequence
-    let rec getPermutationsWithPDigits (s : string) p =
-        seq {
-            for i in {0..9} |> Seq.where (string >> s.Contains >> not) do 
-            match p with
-            | 1 -> yield (s + (string i))
-            | _ -> yield! (getPermutationsWithPDigits (s + (string i)) (p - 1))
-        }
     getPermutationsWithPDigits "" 10
     |> Seq.skip (n - 1)
     |> Seq.take 1
@@ -447,6 +449,22 @@ let problem41 =
     |> Seq.find (fun x -> isPrime x && isPandigital x)
     |> string
 
+let problem43 =
+    getPermutationsWithPDigits "" 10
+    |> Seq.where(fun x ->
+        {0..6}
+        |> Seq.forall(fun y ->
+            x
+            |> Seq.skip (y + 1)
+            |> Seq.take 3
+            |> stringConcatFromCharSeq
+            |> int
+            |> (fun z -> z % (primes |> Seq.item y) = 0)
+        )
+    )
+    |> Seq.sumBy int64
+    |> string
+
 let problem48 n =
     {1..n}
     |> Seq.sumBy (fun x -> (bigint x) ** x)
@@ -529,6 +547,7 @@ do validate 38 problem38 "932718654"
 do validate 39 (problem39 1000) "840"
 do validate 40 (problem40 6) "210"
 do validate 41 problem41 "7652413"
+do validate 43 problem43 "16695334890"
 
 do validate 48 (problem48 10) "0405071317"
 do validate 48 (problem48 1000) "9110846700"
