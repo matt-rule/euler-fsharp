@@ -6,7 +6,7 @@
 
 let problem2 n =
     Seq.unfold(fun (x, y) -> Some(x + y, (y, x + y))) (0, 1)
-    |> Seq.takeWhile (fun x -> x <= n)
+    |> Seq.takeWhile ((<=) n)
     |> Seq.where(fun x -> x % 2 = 0)
     |> Seq.sum
     |> string
@@ -23,10 +23,10 @@ let problem3 n =
     |> string
 
 let stringConcatFromCharSeq (input : char seq) =
-    input |> (Seq.map string) |> (Seq.fold (+) "")
+    input |> Seq.map string |> Seq.reduce (+)
 
 let stringConcatFromIntSeq (input : int seq) =
-    input |> (Seq.map string) |> (Seq.fold (+) "")
+    input |> Seq.map string |> Seq.reduce (+)
 
 let problem4 n =
     let max =
@@ -197,11 +197,8 @@ let rec getPermutationsWithPDigits (s : string) p =
     }
 
 let problem24 n =
-    // We want to obtain the nth permutation.
     getPermutationsWithPDigits "" 10
-    |> Seq.skip (n - 1)
-    |> Seq.take 1
-    |> Seq.head
+    |> Seq.item n
 
 let problem25 n =
     let fibonacci = Seq.unfold(fun (x, y) -> Some(x + y, (y, x + y))) (0I, 1I)
@@ -449,21 +446,55 @@ let problem41 =
     |> Seq.find (fun x -> isPrime x && isPandigital x)
     |> string
 
-let problem43 =
-    getPermutationsWithPDigits "" 10
-    |> Seq.where(fun x ->
-        {0..6}
-        |> Seq.forall(fun y ->
-            x
-            |> Seq.skip (y + 1)
-            |> Seq.take 3
-            |> stringConcatFromCharSeq
-            |> int
-            |> (fun z -> z % (primes |> Seq.item y) = 0)
-        )
+// let problem43 =
+//     getPermutationsWithPDigits "" 10
+//     |> Seq.where(fun x ->
+//         {0..6}
+//         |> Seq.forall(fun y ->
+//             x
+//             |> Seq.skip (y + 1)
+//             |> Seq.take 3
+//             |> stringConcatFromCharSeq
+//             |> int
+//             |> (fun z -> z % (primes |> Seq.item y) = 0)
+//         )
+//     )
+//     |> Seq.sumBy int64
+//     |> string
+
+let pentagonal n = (n*(3L*n-1L))/2L
+let customUnfold f state =
+    Seq.unfold (fun x -> Some(x, f x)) state
+let pentagonals = customUnfold ((+) 1L) 1L |> Seq.map pentagonal
+
+// let problem44 =
+    // seq {
+    //     for x in customUnfold ((+) 1L) 1L |> Seq.map pentagonal |> Seq.takeWhile (fun a -> a < 1000000L) do
+    //     for y in customUnfold ((+) 1L) 1L |> Seq.map pentagonal |> Seq.takeWhile (fun b -> b < x) do
+    //     if (
+    //         (pentagonals |> Seq.contains (x+y))
+    //         && (pentagonals |> Seq.contains (abs (x-y)))
+    //     )
+    //     then
+    //         yield abs (x-y)
+    // }
+//     |> Seq.reduce min
+//     |> string
+
+seq {
+    for x in ((customUnfold ((+) 1L) 1L) |> Seq.map pentagonal |> (Seq.takeWhile (fun a -> a < 1000000L))) do
+    for y in ((customUnfold ((+) 1L) 1L) |> Seq.map pentagonal |> (Seq.takeWhile (fun b -> b < x))) do
+    if (
+        (pentagonals |> Seq.contains (x+y))
+        && (pentagonals |> Seq.contains (abs (x-y)))
     )
-    |> Seq.sumBy int64
-    |> string
+    then
+        yield abs (x-y)
+}
+|> Seq.iter (printfn "%i")
+//printfn "%s" problem44
+
+//Seq.initInfinite ((+) 1) |> Seq.map pentagonal |> Seq.take 20 |> Seq.iter (printfn "%i")
 
 let problem48 n =
     {1..n}
@@ -547,7 +578,8 @@ do validate 38 problem38 "932718654"
 do validate 39 (problem39 1000) "840"
 do validate 40 (problem40 6) "210"
 do validate 41 problem41 "7652413"
-do validate 43 problem43 "16695334890"
+// Skip 43 because it's evaluated ahead of time
+//do validate 43 problem43 "16695334890"
 
 do validate 48 (problem48 10) "0405071317"
 do validate 48 (problem48 1000) "9110846700"
