@@ -105,6 +105,8 @@ let problem10 n =
 
 let intSqrt = float >> sqrt >> int
 
+// TODO: Consider the triangular number sequence on problem 45.
+
 let problem12 n =
     // Triangular numbers.
     Seq.unfold(fun (acc, n) -> Some(acc + n, (acc + n, n + 1))) (0, 1)
@@ -481,20 +483,37 @@ let pentagonals = customUnfold ((+) 1L) 1L |> Seq.map pentagonal
 //     |> Seq.reduce min
 //     |> string
 
-seq {
-    for x in ((customUnfold ((+) 1L) 1L) |> Seq.map pentagonal |> (Seq.takeWhile (fun a -> a < 1000000L))) do
-    for y in ((customUnfold ((+) 1L) 1L) |> Seq.map pentagonal |> (Seq.takeWhile (fun b -> b < x))) do
-    if (
-        (pentagonals |> Seq.contains (x+y))
-        && (pentagonals |> Seq.contains (abs (x-y)))
-    )
-    then
-        yield abs (x-y)
-}
-|> Seq.iter (printfn "%i")
+// seq {
+//     for x in ((customUnfold ((+) 1L) 1L) |> Seq.map pentagonal |> (Seq.takeWhile (fun a -> a < 1000000L))) do
+//     for y in ((customUnfold ((+) 1L) 1L) |> Seq.map pentagonal |> (Seq.takeWhile (fun b -> b < x))) do
+//     if (
+//         (pentagonals |> Seq.contains (x+y))
+//         && (pentagonals |> Seq.contains (abs (x-y)))
+//     )
+//     then
+//         yield abs (x-y)
+// }
+// |> Seq.iter (printfn "%i")
 //printfn "%s" problem44
 
 //Seq.initInfinite ((+) 1) |> Seq.map pentagonal |> Seq.take 20 |> Seq.iter (printfn "%i")
+
+let pentagonal32 n = (n*(3*n-1))/2
+let triangular n = n*(n+1)/2
+let hexagonal n = n*(2*n-1)
+let triangulars = Seq.initInfinite ((+) 1) |> Seq.map triangular
+let pentagonals32 = Seq.initInfinite ((+) 1) |> Seq.map pentagonal32
+let hexagonals = Seq.initInfinite ((+) 1) |> Seq.map hexagonal
+
+// Find first after n
+let problem45 n =
+    hexagonals
+    |> Seq.where (fun x -> pentagonals32 |> Seq.contains x)
+    |> Seq.where (fun x -> triangulars |> Seq.contains x)
+    |> Seq.find(fun x -> x > n)
+    |> string
+
+printfn "%s" (problem45 40755)
 
 let problem48 n =
     {1..n}
