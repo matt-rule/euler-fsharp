@@ -513,7 +513,23 @@ let problem45 n =
     |> Seq.find(fun x -> x > n)
     |> string
 
-printfn "%s" (problem45 40755)
+let isSquare n =
+    {1..intSqrt n}
+    |> Seq.exists(fun x -> x*x = n)
+
+let canBeWrittenAsSumOfPrimeAndTwiceASquare n =
+    {1..n-1}
+    |> Seq.where isPrime
+    |> Seq.exists(fun x -> (n-x) % 2 = 0 && ((n-x)/2) |> isSquare)
+
+let problem46 =
+    Seq.initInfinite((+) 1)
+    |> Seq.skip 1
+    |> Seq.where(fun x -> x % 2 = 1 && not (isPrime x))
+    |> Seq.find (canBeWrittenAsSumOfPrimeAndTwiceASquare >> not)
+    |> string
+
+//printfn "%s" (problem45 40755)
 
 let problem48 n =
     {1..n}
@@ -599,6 +615,7 @@ do validate 40 (problem40 6) "210"
 do validate 41 problem41 "7652413"
 // Skip 43 because it's evaluated ahead of time
 //do validate 43 problem43 "16695334890"
+do validate 46 problem46 "5777"
 
 do validate 48 (problem48 10) "0405071317"
 do validate 48 (problem48 1000) "9110846700"
