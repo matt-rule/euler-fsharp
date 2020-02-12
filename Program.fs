@@ -529,7 +529,31 @@ let problem46 =
     |> Seq.find (canBeWrittenAsSumOfPrimeAndTwiceASquare >> not)
     |> string
 
-//printfn "%s" (problem45 40755)
+let primeFactors n =
+    (
+        Seq.unfold (fun p ->
+        if p = 1
+        then None
+        else
+            primes
+            |> Seq.find(fun x -> p % x = 0) 
+            |> (fun x -> Some(x, p / x))
+        ) n
+    )
+    |> Seq.distinct
+
+let primeFactorsForRange n p =
+    {0..(n-1)}
+    |> Seq.map (fun x -> primeFactors (p+x))
+
+let consecutiveNumbersHaveNDistinctPrimeFactors n p =
+    primeFactorsForRange n p
+    |> Seq.forall(fun x -> x |> Seq.length = n)
+
+let problem47 n =
+    Seq.initInfinite((+) 1)
+    |> Seq.find (consecutiveNumbersHaveNDistinctPrimeFactors n)
+    |> string
 
 let problem48 n =
     {1..n}
@@ -616,6 +640,12 @@ do validate 41 problem41 "7652413"
 // Skip 43 because it's evaluated ahead of time
 //do validate 43 problem43 "16695334890"
 do validate 46 problem46 "5777"
+
+
+do validate 47 (problem47 2) "14"
+do validate 47 (problem47 3) "644"
+// Skip 47 with input 4 because it takes a very long time.
+//do validate 47 (problem47 4) "134043"
 
 do validate 48 (problem48 10) "0405071317"
 do validate 48 (problem48 1000) "9110846700"
