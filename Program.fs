@@ -562,6 +562,20 @@ let problem48 n =
     |> (fun x -> x |> Seq.skip (x.Length - 10))
     |> stringConcatFromCharSeq
 
+let isPermutation x y =
+    (x |> digits |> Seq.sort |> stringConcatFromIntSeq) = (y |> digits |> Seq.sort |> stringConcatFromIntSeq)
+
+let problem49 s =
+    seq {
+        for x in 1000..9999 do
+            if isPrime x then
+                for y in 1..((9999-x)/2) do
+                    if (isPermutation x (x+y)) && (isPermutation x (x+y*2)) && isPrime (x+y) && isPrime (x+y*2) then
+                        yield (stringConcatFromIntSeq (Seq.concat [digits x; (digits (x+y)); (digits (x+y*2))]))
+    }
+    |> Seq.where((<>) s)
+    |> Seq.head
+
 let validate (problemNumber : int) actualOutput expectedOutput =
     "Problem "
     + (string problemNumber)
@@ -649,3 +663,5 @@ do validate 47 (problem47 3) "644"
 
 do validate 48 (problem48 10) "0405071317"
 do validate 48 (problem48 1000) "9110846700"
+
+do validate 49 (problem49 "148748178147") "296962999629"
