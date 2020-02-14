@@ -573,8 +573,49 @@ let problem49 s =
                     if (isPermutation x (x+y)) && (isPermutation x (x+y*2)) && isPrime (x+y) && isPrime (x+y*2) then
                         yield (stringConcatFromIntSeq (Seq.concat [digits x; (digits (x+y)); (digits (x+y*2))]))
     }
-    |> Seq.where((<>) s)
-    |> Seq.head
+    |> Seq.find((<>) s)
+
+let arrayPrimesBelowN n =
+    primes
+    |> Seq.takeWhile ((>) n)
+    |> Array.ofSeq
+
+//do primesBelowOneMillion |> Array.iter (printfn "%i")
+
+let rec iteratePrimes (primesArray : int array) (n : int) (indicesSoFar : int) (total : int) (indexToAdd : int) : (int*int) seq =
+    seq {
+        if indexToAdd >= (primesArray |> Array.length)
+        then ()
+        else
+            let newTotal = total + primesArray.[indexToAdd]
+            if newTotal >= n
+            then ()
+            else
+                if isPrime newTotal then yield (newTotal, indicesSoFar + 1)
+                yield! iteratePrimes primesArray n (indicesSoFar + 1) newTotal (indexToAdd + 1)
+    }
+
+let problem50 n =
+    let primesArray = arrayPrimesBelowN n
+    [0..(n-1)]
+    |> Seq.collect (iteratePrimes primesArray n 0 0)
+    |> Seq.maxBy snd
+    |> fst
+    |> string
+
+//let problem50 n =
+    // generate a list of primes below one million
+    // for each prime in the list p
+    //     create a sequence q of numbers from p to list.length
+    //         fold over q with the following function:
+    //             fun x ->
+            //         add x to the total
+            //             if total is over 1 million then None
+            //             if total is prime then
+            //                 yield a tuple: (t = total, u = number of primes which were summed)
+    // select the tuple in the above sequence with max u
+    // take t
+    // convert to string
 
 let validate (problemNumber : int) actualOutput expectedOutput =
     "Problem "
@@ -664,4 +705,6 @@ do validate 47 (problem47 3) "644"
 do validate 48 (problem48 10) "0405071317"
 do validate 48 (problem48 1000) "9110846700"
 
-do validate 49 (problem49 "148748178147") "296962999629"
+//do validate 49 (problem49 "148748178147") "296962999629"
+
+do validate 50 (problem50 1000000) "997651"
