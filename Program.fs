@@ -1,4 +1,6 @@
-﻿let problem1 n =
+﻿open System.IO;
+
+let problem1 n =
     {1..n-1}
     |> Seq.where(fun x -> x % 3 = 0 || x % 5 = 0)
     |> Seq.sum
@@ -85,6 +87,20 @@ let problem7 n =
     |> Seq.find(fun (x, y) -> x = n)
     |> snd
     |> string
+
+// TODO: Seq.windowed can be used in other places too
+let problem8 file n =
+    let lines = File.ReadAllLines file
+    let concatenated = lines |> String.concat ""
+    let x = 
+        concatenated
+        |> Seq.windowed n
+    x
+    |> Seq.map (string >> int >> Seq.reduce (*))
+    |> Seq.max
+    |> string
+
+printfn "%s" (problem8 "data/problem8.txt" 4)
 
 let problem9 n =
     seq {
