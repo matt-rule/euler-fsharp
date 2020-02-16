@@ -90,17 +90,15 @@ let problem7 n =
 
 // TODO: Seq.windowed can be used in other places too
 let problem8 file n =
-    let lines = File.ReadAllLines file
-    let concatenated = lines |> String.concat ""
-    let x = 
-        concatenated
-        |> Seq.windowed n
-    x
-    |> Seq.map (string >> int >> Seq.reduce (*))
+    let productOfChars =
+        Array.map (string >> int64)
+        >> Array.reduce (*)
+    File.ReadAllLines file
+    |> String.concat ""
+    |> Seq.windowed n
+    |> Seq.map productOfChars
     |> Seq.max
     |> string
-
-printfn "%s" (problem8 "data/problem8.txt" 4)
 
 let problem9 n =
     seq {
@@ -660,7 +658,8 @@ do validate 6 (problem6 10) "2640"
 do validate 6 (problem6 100) "25164150"
 do validate 7 (problem7 6) "13"
 do validate 7 (problem7 10001) "104743"
-// Skip 8 due to large input.
+do validate 8 (problem8 "data/problem8.txt" 4) "5832"
+do validate 8 (problem8 "data/problem8.txt" 13) "23514624000"
 // Skip 9 because it takes a long time.
 do validate 9 (problem9 1000) "31875000"
 do validate 10 (problem10 10L) "17"
