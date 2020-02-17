@@ -1,4 +1,5 @@
-﻿open System.IO;
+﻿open System;
+open System.IO;
 
 let problem1 n =
     {1..n-1}
@@ -120,6 +121,36 @@ let problem10 n =
 let intSqrt = float >> sqrt >> int
 
 // TODO: Consider the triangular number sequence on problem 45.
+
+let problem11 filename n =
+    let numberArray =
+        File.ReadAllLines filename
+        |> Array.map (fun s -> s.Split ' ' |> Array.map int32)
+    seq {
+        for a in 0..(n-5) do
+            for b in 0..(n-5) do
+                yield (
+                    seq {
+                        for x in 0..3 do
+                            yield numberArray.[a+x].[b+x]
+                            yield numberArray.[a+4-x].[b+x]
+                    }
+                    |> Seq.reduce (*)
+                )
+            for b in 0..(n-1) do
+                yield (
+                    seq {
+                        for x in 0..3 do
+                            yield numberArray.[a+x].[b]
+                            yield numberArray.[b].[a+x]
+                    }
+                    |> Seq.reduce (*)
+                )
+    }
+    |> Seq.max
+    |> string
+
+do printfn "%s" (problem11 "data/problem11.txt" 20)
 
 let problem12 n =
     // Triangular numbers.
