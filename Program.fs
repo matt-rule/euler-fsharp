@@ -129,24 +129,25 @@ let problem11 filename n =
     seq {
         for a in 0..(n-5) do
             for b in 0..(n-5) do
-                yield (
-                    seq {
-                        for x in 0..3 do
-                            yield numberArray.[a+x].[b+x]
-                            yield numberArray.[a+4-x].[b+x]
-                    }
-                    |> Seq.reduce (*)
-                )
+                yield seq {
+                    for x in 0..3 do
+                        yield numberArray.[a+x].[b+x]
+                }
+                yield seq {
+                    for x in 0..3 do
+                        yield numberArray.[a+4-x].[b+x]
+                }
             for b in 0..(n-1) do
-                yield (
-                    seq {
-                        for x in 0..3 do
-                            yield numberArray.[a+x].[b]
-                            yield numberArray.[b].[a+x]
-                    }
-                    |> Seq.reduce (*)
-                )
+                yield seq {
+                    for x in 0..3 do
+                        yield numberArray.[a+x].[b]
+                }
+                yield seq {
+                    for x in 0..3 do
+                        yield numberArray.[b].[a+x]
+                }
     }
+    |> Seq.map (Seq.reduce (*))
     |> Seq.max
     |> string
 
