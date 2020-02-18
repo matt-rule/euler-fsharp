@@ -151,8 +151,6 @@ let problem11 filename n =
     |> Seq.max
     |> string
 
-do printfn "%s" (problem11 "data/problem11.txt" 20)
-
 let problem12 n =
     // Triangular numbers.
     Seq.unfold(fun (acc, n) -> Some(acc + n, (acc + n, n + 1))) (0, 1)
@@ -163,6 +161,17 @@ let problem12 n =
         |> Seq.where(fun y -> x % y = 0)
         |> Seq.length > n / 2
     )
+    |> string
+
+let bigIntDigits n = n |> string |> Seq.map (string >> int)
+
+let problem13 filename =
+    File.ReadAllLines filename
+    |> Seq.map bigint.Parse
+    |> Seq.reduce (+)
+    |> bigIntDigits
+    |> Seq.take 10
+    |> stringConcatFromIntSeq
     |> string
     
 let problem14 n =
@@ -697,10 +706,10 @@ do validate 9 (problem9 1000) "31875000"
 do validate 10 (problem10 10L) "17"
 // Skip this because it's too slow.
 // do validate 10 problem10 "2000000" "142913828922"
-// Skip 11 due to large input.
+do validate 11 (problem11 "data/problem11.txt" 20) "70600674"
 do validate 12 (problem12 5) "28"
 do validate 12 (problem12 500) "76576500"
-// Skip 13 due to large input.
+do validate 13 (problem13 "data/problem13.txt") "5537376230"
 // TODO: Validation for 14 is to make sure the sequence from 13 to 1 contains 10 terms.
 // Skip 14 because it takes a long time.
 // do validate 14 problem14 "1000000" "837799"
