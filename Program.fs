@@ -217,6 +217,21 @@ let problem16 n =
     |> sumOfDigits
     |> string
 
+let problem19 =
+    let isLeapYear n = (n % 4 = 0) && (n % 100 <> 0 || n % 400 = 0)
+    let daysInMonth y m =
+        let daysInFeb = if isLeapYear y then 29 else 28
+        [| 31; daysInFeb; 31; 30; 31; 30; 31; 31; 30; 31; 30; 31 |].[m]
+    seq {
+        for y in 1901..2000 do
+            for m in 0..11 do
+                yield daysInMonth y m
+    }
+    |> Seq.scan (fun x y -> (x + y) % 7) 0
+    |> Seq.where ((=) 0)
+    |> Seq.length
+    |> string
+
 let problem20 (n : int32) =
     {1I..(bigint n)}
     |> Seq.fold (fun x y -> bigint.Multiply (x, y)) 1I
@@ -717,8 +732,8 @@ do validate 15 (problem15 2) "6"
 do validate 15 (problem15 20) "137846528820"
 do validate 16 (problem16 15) "26"
 do validate 16 (problem16 1000) "1366"
-
-// Skip 17-19 due to large input.
+// Skip 17-18 due to large input.
+do validate 19 problem19 "171"
 do validate 20 (problem20 10) "27"
 do validate 20 (problem20 100) "648"
 // No first part for 21.
