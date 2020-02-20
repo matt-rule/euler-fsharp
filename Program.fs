@@ -9,7 +9,7 @@ let problem1 n =
 
 let problem2 n =
     Seq.unfold(fun (x, y) -> Some(x + y, (y, x + y))) (0, 1)
-    |> Seq.takeWhile ((<=) n)
+    |> Seq.takeWhile ((>=) n)
     |> Seq.where(fun x -> x % 2 = 0)
     |> Seq.sum
     |> string
@@ -153,7 +153,8 @@ let problem11 filename n =
 
 let problem12 n =
     // Triangular numbers.
-    Seq.unfold(fun (acc, n) -> Some(acc + n, (acc + n, n + 1))) (0, 1)
+    Seq.initInfinite ((+) 1)
+    |> Seq.scan (+) 0
     |> Seq.find(fun x ->
         // Get all divisors for x up to sqrt(x)
         // This might count the square root twice
@@ -216,6 +217,15 @@ let problem16 n =
     nest n ((*) 2I) 1I
     |> sumOfDigits
     |> string
+
+let problem17 n =
+    let oneToNine = [| 3, 3, 5, 4, 4, 3, 5, 5, 4 |]
+    let tenToNineteen = [| 3, 6, 6, 8, 8, 7, 7, 9, 8, 8 |]
+    let twentyToNinety = [| 6, 6, 5, 5, 5, 7, 6, 6 |]
+    let rec letterCount num =
+        if num = 1000 then 11
+        if num > 99 then (letterCount num/100) + 
+
 
 let problem19 =
     let isLeapYear n = (n % 4 = 0) && (n % 100 <> 0 || n % 400 = 0)
