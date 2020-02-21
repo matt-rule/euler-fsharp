@@ -219,13 +219,17 @@ let problem16 n =
     |> string
 
 let problem17 n =
-    let oneToNine = [| 3, 3, 5, 4, 4, 3, 5, 5, 4 |]
-    let tenToNineteen = [| 3, 6, 6, 8, 8, 7, 7, 9, 8, 8 |]
-    let twentyToNinety = [| 6, 6, 5, 5, 5, 7, 6, 6 |]
+    let oneToNineteen = [| 3; 3; 5; 4; 4; 3; 5; 5; 4; 3; 6; 6; 8; 8; 7; 7; 9; 8; 8 |]
+    let twentyToNinety = [| 6; 6; 5; 5; 5; 7; 6; 6 |]
     let rec letterCount num =
         if num = 1000 then 11
-        if num > 99 then (letterCount num/100) + 
-
+        else if num > 99 then (letterCount (num/100)) + 7 + (if (letterCount (num%100)) > 0 then 3 + (letterCount (num%100)) else 0) 
+        else if num > 19 then twentyToNinety.[num/10-2] + letterCount (num%10)
+        else if num > 0 then oneToNineteen.[num-1]
+        else 0
+    {1..n}
+    |> Seq.sumBy letterCount
+    |> string
 
 let problem19 =
     let isLeapYear n = (n % 4 = 0) && (n % 100 <> 0 || n % 400 = 0)
@@ -742,7 +746,9 @@ do validate 15 (problem15 2) "6"
 do validate 15 (problem15 20) "137846528820"
 do validate 16 (problem16 15) "26"
 do validate 16 (problem16 1000) "1366"
-// Skip 17-18 due to large input.
+do validate 17 (problem17 5) "19"
+do validate 17 (problem17 1000) "21124"
+// Skip 18 due to large input.
 do validate 19 problem19 "171"
 do validate 20 (problem20 10) "27"
 do validate 20 (problem20 100) "648"
