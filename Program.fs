@@ -231,6 +231,20 @@ let problem17 n =
     |> Seq.sumBy letterCount
     |> string
 
+let problem18 filename =
+    let addMaxXToY (x, y) = (Array.max x) + y
+    let addPairwiseMax x y =
+        Array.zip (Array.windowed 2 x) y
+        |> Array.map addMaxXToY
+    File.ReadAllLines filename
+    |> Array.map(fun s -> s.Split(' ') |> Array.map int)
+    |> Array.rev
+    |> Array.reduce addPairwiseMax
+    |> Array.exactlyOne
+    |> string
+
+printfn "%s" (problem18 "data/problem18.txt")
+
 let problem19 =
     let isLeapYear n = (n % 4 = 0) && (n % 100 <> 0 || n % 400 = 0)
     let daysInMonth y m =
