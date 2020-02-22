@@ -231,10 +231,10 @@ let problem17 n =
     |> Seq.sumBy letterCount
     |> string
 
-let problem18 filename =
-    let addMaxXToY (x, y) = (Array.max x) + y
+let maxTotalForTriangle filename =
+    let addMaxXToY ((x1, x2), y) = y + max x1 x2
     let addPairwiseMax x y =
-        Array.zip (Array.windowed 2 x) y
+        Array.zip (Array.pairwise x) y
         |> Array.map addMaxXToY
     File.ReadAllLines filename
     |> Array.map(fun s -> s.Split(' ') |> Array.map int)
@@ -242,6 +242,8 @@ let problem18 filename =
     |> Array.reduce addPairwiseMax
     |> Array.exactlyOne
     |> string
+
+let problem18 = maxTotalForTriangle
 
 printfn "%s" (problem18 "data/problem18.txt")
 
@@ -276,6 +278,22 @@ let problem21 n =
     |> Seq.where(fun x -> (sumOfProperDivisors >> sumOfProperDivisors) x = x && sumOfProperDivisors x <> x)
     |> Seq.sum
     |> string
+
+let problem22 filename =
+    let allNames =
+        File.ReadAllLines filename
+        |> Array.head
+    allNames.Split(",")
+    |> Array.sort
+    |> Array.map(fun s ->
+        s.Substring(1, s.Length - 2)
+        |> Seq.sumBy (int >> ((+) -64))
+    )
+    |> Seq.zip(Seq.initInfinite((+) 1))
+    |> Seq.sumBy(fun (x, y) -> x * y)
+    |> string
+
+printfn "%s" (problem22 "data/problem22.txt")
 
 let problem23 n =
     let abundantNumbers = 
