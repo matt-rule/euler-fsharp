@@ -130,21 +130,17 @@ let problem11 filename n =
         for a in 0..(n-5) do
             for b in 0..(n-5) do
                 yield seq {
-                    for x in 0..3 do
-                        yield numberArray.[a+x].[b+x]
+                    for x in 0..3 -> numberArray.[a+x].[b+x]
                 }
                 yield seq {
-                    for x in 0..3 do
-                        yield numberArray.[a+4-x].[b+x]
+                    for x in 0..3 -> numberArray.[a+4-x].[b+x]
                 }
             for b in 0..(n-1) do
                 yield seq {
-                    for x in 0..3 do
-                        yield numberArray.[a+x].[b]
+                    for x in 0..3 -> numberArray.[a+x].[b]
                 }
                 yield seq {
-                    for x in 0..3 do
-                        yield numberArray.[b].[a+x]
+                    for x in 0..3 -> numberArray.[b].[a+x]
                 }
     }
     |> Seq.map (Seq.reduce (*))
@@ -175,21 +171,18 @@ let problem13 filename =
     |> stringConcatFromIntSeq
     |> string
     
-let problem14 n =
-    // Collatz sequence.
-    let collatzSequence = Seq.unfold(fun x ->
-        if x = 1L then None else
-        Some(
-            let next = (if x % 2L = 0L then (x / 2L) else (x*3L + 1L))
-            (next, next)
-        )
-    )
-    {1L..n-1L}
-    |> Seq.map(fun x -> (x, x |> collatzSequence |> Seq.length))
-    |> Seq.fold(fun x y -> if (snd x) > (snd y) then x else y) (1L, 1)
-    |> fst
-    |> string
+// let problem14 n =
+//     let collatz n = if n % 2L = 0L then (n / 2L) else (n*3L + 1L)
+//     let rec collatzSequence n = seq {
+//         yield n
+//         if n <> 1L then yield! (collatzSequence (collatz n))
+//     }
+//     {1L..n-1L}
+//     |> Seq.maxBy (collatzSequence >> Seq.length)
+//     |> string
     
+// printfn "%s" (problem14 1000000L)
+
 let problem15 n =
     let rec countLattice state step maxStep =
         if step = maxStep
@@ -254,8 +247,8 @@ let problem19 =
         [| 31; daysInFeb; 31; 30; 31; 30; 31; 31; 30; 31; 30; 31 |].[m]
     seq {
         for y in 1901..2000 do
-            for m in 0..11 do
-                yield daysInMonth y m
+            for m in 0..11 ->
+                daysInMonth y m
     }
     |> Seq.scan (fun x y -> (x + y) % 7) 0
     |> Seq.where ((=) 0)
@@ -280,17 +273,11 @@ let problem21 n =
     |> string
 
 let problem22 filename =
-    let allNames =
-        File.ReadAllLines filename
-        |> Array.head
-    allNames.Split(",")
+    (File.ReadAllText filename).Replace("\"", "").Split(',')
     |> Array.sort
-    |> Array.map(fun s ->
-        s.Substring(1, s.Length - 2)
-        |> Seq.sumBy (int >> ((+) -64))
-    )
-    |> Seq.zip(Seq.initInfinite((+) 1))
-    |> Seq.sumBy(fun (x, y) -> x * y)
+    |> Array.map (Seq.sumBy (int >> ((+) (1 - int 'A'))))
+    |> Seq.zip (Seq.initInfinite((+) 1))
+    |> Seq.sumBy (fun (x, y) -> x * y)
     |> string
 
 printfn "%s" (problem22 "data/problem22.txt")
@@ -362,8 +349,8 @@ let problem27 cap =
         |> Seq.find(fun n -> (n*n + a*n + b) |> isPrime |> not)
     seq {
         for a in -(cap-1)..(cap-1) do
-        for b in -cap..cap do
-        yield (a*b, consecutivePrimes a b)
+        for b in -cap..cap ->
+            (a*b, consecutivePrimes a b)
     }
     |> Seq.maxBy snd |> fst |> string
 
@@ -388,8 +375,7 @@ let problem28 n =
 let problem29 (n : int32) =
     seq {
         for a in 2I..(bigint n) do
-        for b in 2..n do
-        yield a**b
+        for b in 2..n -> a**b
     }
     |> Seq.distinct
     |> Seq.length
@@ -404,6 +390,23 @@ let problem30 n =
     |> Seq.where (fun x -> x = (x |> digits |> Seq.sumBy(fun y -> (pown y n))))
     |> Seq.sum
     |> string
+
+let problem31 (n : int) =
+    let coins = [| 1; 2; 5; 10; 20; 50; 100; 200 |]
+    let rec countStep (currentTotal : int) =
+        seq {
+            for i in { 0..((coins |> Array.length) - 1) } do
+                match (currentTotal + (coins.[i])) with
+                | x when x = n -> yield ()
+                | x when x < n -> yield! (countStep (currentTotal + (coins |> Array.item i)))
+                | _ -> do ()
+        }
+    let a = (countStep 0)
+    a
+    |> Seq.length
+    |> string
+
+printfn "%s" (problem31 200)
 
 // let problem32 =
 //     let rec getPermutationsOneToNine (s : string) p =
@@ -436,8 +439,7 @@ let problem30 n =
 //     let twoDigitFractions =
 //         seq {
 //             for x in 10..99 do
-//             for y in x..99 do                   // consider using x+1 instead
-//             yield (x, y)
+//             for y in x..99 -> (x, y)                  // consider using x+1 instead
 //         }
     
 
