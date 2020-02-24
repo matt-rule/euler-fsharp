@@ -238,8 +238,6 @@ let maxTotalForTriangle filename =
 
 let problem18 = maxTotalForTriangle
 
-printfn "%s" (problem18 "data/problem18.txt")
-
 let problem19 =
     let isLeapYear n = (n % 4 = 0) && (n % 100 <> 0 || n % 400 = 0)
     let daysInMonth y m =
@@ -279,8 +277,6 @@ let problem22 filename =
     |> Seq.zip (Seq.initInfinite((+) 1))
     |> Seq.sumBy (fun (x, y) -> x * y)
     |> string
-
-printfn "%s" (problem22 "data/problem22.txt")
 
 let problem23 n =
     let abundantNumbers = 
@@ -393,20 +389,17 @@ let problem30 n =
 
 let problem31 (n : int) =
     let coins = [| 1; 2; 5; 10; 20; 50; 100; 200 |]
-    let rec countStep (currentTotal : int) =
+    let rec countStep (currentTotal : int) (currentIndex : int) =
         seq {
-            for i in { 0..((coins |> Array.length) - 1) } do
+            for i in { currentIndex..((coins |> Array.length) - 1) } do
                 match (currentTotal + (coins.[i])) with
                 | x when x = n -> yield ()
-                | x when x < n -> yield! (countStep (currentTotal + (coins |> Array.item i)))
+                | x when x < n -> yield! (countStep (currentTotal + (coins |> Array.item i)) i)
                 | _ -> do ()
         }
-    let a = (countStep 0)
-    a
+    countStep 0 0
     |> Seq.length
     |> string
-
-printfn "%s" (problem31 200)
 
 // let problem32 =
 //     let rec getPermutationsOneToNine (s : string) p =
@@ -782,13 +775,13 @@ do validate 16 (problem16 15) "26"
 do validate 16 (problem16 1000) "1366"
 do validate 17 (problem17 5) "19"
 do validate 17 (problem17 1000) "21124"
-// Skip 18 due to large input.
+do validate 18 (problem18 "data/problem18.txt") "1074"
 do validate 19 problem19 "171"
 do validate 20 (problem20 10) "27"
 do validate 20 (problem20 100) "648"
 // No first part for 21.
 do validate 21 (problem21 10000) "31626"
-// Skip 22 due to large input.
+do validate 22 (problem22 "data/problem22.txt") "871198282"
 // TODO: Optimise 23.
 // do validate 23 problem23 "28123" "0"
 // TODO: Optimise
@@ -803,6 +796,7 @@ do validate 29 (problem29 5) "15"
 do validate 29 (problem29 100) "9183"
 do validate 30 (problem30 4) "19316"
 do validate 30 (problem30 5) "443839"
+do validate 31 (problem31 200) "73682"
 // TODO: Optimise 32.
 // do validate 32 problem32 "45228"
 do validate 35 (problem35 100) "13"
