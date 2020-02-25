@@ -448,6 +448,16 @@ let problem31 (n : int) =
 //         //         7, 8
 //         // yield 5
 
+let problem34 n =
+    let sumOfDigitFactorials =
+        digits >> Seq.map (fun y -> {1..y} |> Seq.reduce ( * )) >> Seq.sum
+    {3..n}
+    |> Seq.where(fun x -> x = (sumOfDigitFactorials x))
+    |> Seq.sum
+    |> string
+
+printfn "%s" (problem34 1000)
+
 let problem35 n =
     let isCircularPrime x =
         if (x |> isPrime |> not) then
