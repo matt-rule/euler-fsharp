@@ -448,15 +448,17 @@ let problem31 (n : int) =
 //         //         7, 8
 //         // yield 5
 
+let factorial n =
+    if n = 0 then 1
+    else {1..n} |> Seq.reduce ( * )
+        
 let problem34 n =
     let sumOfDigitFactorials =
-        digits >> Seq.map (fun y -> {1..y} |> Seq.reduce ( * )) >> Seq.sum
+        digits >> Seq.map factorial >> Seq.sum
     {3..n}
     |> Seq.where(fun x -> x = (sumOfDigitFactorials x))
     |> Seq.sum
     |> string
-
-printfn "%s" (problem34 1000)
 
 let problem35 n =
     let isCircularPrime x =
@@ -809,6 +811,7 @@ do validate 30 (problem30 5) "443839"
 do validate 31 (problem31 200) "73682"
 // TODO: Optimise 32.
 // do validate 32 problem32 "45228"
+do validate 34 (problem34 1000000) "40730"
 do validate 35 (problem35 100) "13"
 do validate 35 (problem35 1000000) "55"
 do validate 36 (problem36 1000000) "872187"
