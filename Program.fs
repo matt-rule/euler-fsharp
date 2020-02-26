@@ -270,10 +270,13 @@ let problem21 n =
     |> Seq.sum
     |> string
 
+let wordScore =
+    Seq.sumBy (int >> ((+) (1 - int 'A')))
+
 let problem22 filename =
     (File.ReadAllText filename).Replace("\"", "").Split(',')
     |> Array.sort
-    |> Array.map (Seq.sumBy (int >> ((+) (1 - int 'A'))))
+    |> Array.map wordScore
     |> Seq.zip (Seq.initInfinite((+) 1))
     |> Seq.sumBy (fun (x, y) -> x * y)
     |> string
@@ -571,6 +574,18 @@ let problem41 =
     |> Seq.find (fun x -> isPrime x && isPandigital x)
     |> string
 
+let problem42 filename n =
+    let firstNTriangularNumbers =
+        Seq.initInfinite ((+) 1)
+        |> Seq.scan (+) 0
+        |> Seq.take n
+        |> Array.ofSeq
+    (File.ReadAllText filename).Replace("\"", "").Split(',')
+    |> Seq.map wordScore
+    |> Seq.where(fun x -> firstNTriangularNumbers |> Seq.contains x)
+    |> Seq.length
+    |> string
+
 // let problem43 =
 //     getPermutationsWithPDigits "" 10
 //     |> Seq.where(fun x ->
@@ -791,7 +806,6 @@ do validate 18 (problem18 "data/problem18.txt") "1074"
 do validate 19 problem19 "171"
 do validate 20 (problem20 10) "27"
 do validate 20 (problem20 100) "648"
-// No first part for 21.
 do validate 21 (problem21 10000) "31626"
 do validate 22 (problem22 "data/problem22.txt") "871198282"
 // TODO: Optimise 23.
@@ -820,6 +834,8 @@ do validate 38 problem38 "932718654"
 do validate 39 (problem39 1000) "840"
 do validate 40 (problem40 6) "210"
 do validate 41 problem41 "7652413"
+do validate 42 (problem42 "data/problem42.txt" 200) "162"
+
 // Skip 43 because it's evaluated ahead of time
 //do validate 43 problem43 "16695334890"
 do validate 46 problem46 "5777"
