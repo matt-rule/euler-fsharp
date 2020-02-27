@@ -431,25 +431,46 @@ let problem31 (n : int) =
 //     |> Seq.sum
 //     |> string
 
-// let problem33 =
-//     let twoDigitFractions =
-//         seq {
-//             for x in 10..99 do
-//             for y in x..99 -> (x, y)                  // consider using x+1 instead
-//         }
-    
+let fractionsAreEqual a b =
+    (fst a) * (snd b) = (snd a) * (fst b)
 
-//         // let x1 = digits x |> Seq.head
-//         // let x2 = digits x |> Seq.skip 1 |> Seq.head
-//         // let y1 = digits y |> Seq.head
-//         // let y2 = digits y |> Seq.skip 1 |> Seq.head
-//         // let a1, a2 =
-//         //     if (x1 = y1)
-//         //     then
-//         //         5, 6
-//         //     else
-//         //         7, 8
-//         // yield 5
+let multiplyFractions a b =
+    ((fst a) * (fst b), (snd a) * (snd b))
+
+let lowestCommonTerms fraction =
+    let divisor =
+        {(snd fraction).. -1 .. 1}
+        |> Seq.find(fun x -> ((fst fraction) % x = 0) && ((snd fraction) % x = 0))
+    ((fst fraction) / divisor, (snd fraction) / divisor)
+
+let isCuriousFraction x =
+    let numFstDigit = (fst x) / 10
+    let numSndDigit = (fst x) % 10
+    let denFstDigit = (snd x) / 10
+    let denSndDigit = (snd x) % 10
+
+    if (numSndDigit = 0 && denSndDigit = 0)
+    then false
+    else
+        (numSndDigit = denSndDigit && fractionsAreEqual ((fst x), (snd x)) (numFstDigit, denFstDigit))
+        || (numSndDigit = denFstDigit && fractionsAreEqual ((fst x), (snd x)) (numFstDigit, denSndDigit))
+        || (numFstDigit = denSndDigit && fractionsAreEqual ((fst x), (snd x)) (numSndDigit, denFstDigit))
+        || (numFstDigit = denFstDigit && fractionsAreEqual ((fst x), (snd x)) (numSndDigit, denSndDigit))
+
+let twoDigitFractions =
+    seq {
+        for num in 10..99 do
+        for den in (num+1)..99 -> (num, den)
+    }
+
+let curiousFractions = twoDigitFractions |> Seq.where isCuriousFraction
+
+let problem33 =
+    curiousFractions
+    |> Seq.reduce multiplyFractions
+    |> lowestCommonTerms
+    |> snd
+    |> string
 
 let factorial n =
     if n = 0 then 1
@@ -825,6 +846,7 @@ do validate 30 (problem30 5) "443839"
 do validate 31 (problem31 200) "73682"
 // TODO: Optimise 32.
 // do validate 32 problem32 "45228"
+do validate 33 problem33 "100"
 do validate 34 (problem34 1000000) "40730"
 do validate 35 (problem35 100) "13"
 do validate 35 (problem35 1000000) "55"
