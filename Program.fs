@@ -628,19 +628,28 @@ let customUnfold f state =
     Seq.unfold (fun x -> Some(x, f x)) state
 let pentagonals = customUnfold ((+) 1L) 1L |> Seq.map pentagonal
 
-// let problem44 =
-    // seq {
-    //     for x in customUnfold ((+) 1L) 1L |> Seq.map pentagonal |> Seq.takeWhile (fun a -> a < 1000000L) do
-    //     for y in customUnfold ((+) 1L) 1L |> Seq.map pentagonal |> Seq.takeWhile (fun b -> b < x) do
-    //     if (
-    //         (pentagonals |> Seq.contains (x+y))
-    //         && (pentagonals |> Seq.contains (abs (x-y)))
-    //     )
-    //     then
-    //         yield abs (x-y)
-    // }
-//     |> Seq.reduce min
-//     |> string
+let problem44 n =
+    let pentagonalsBelowN = pentagonals |> Seq.takeWhile ((>) n)
+    let pentagonalPairs = 
+    seq {
+        for x in pentagonalsBelowN do
+            for y in pentagonalsBelowN |> Seq.skipWhile ((>=) x) do
+                yield (x, y)
+    }
+    pentagonalsBelowN |> Seq.take 20 |> Seq.iter (fun x -> x |> string |> (printfn "%s"))
+    seq {
+        for x in pentagonalsBelowN do
+            for y in pentagonalsBelowN |> Seq.skipWhile ((>=) x) do
+                if (
+                    (pentagonalsBelowN |> Seq.contains (x+y))
+                    && (pentagonalsBelowN |> Seq.contains (abs (x-y)))
+                )
+                then yield (abs (x-y))
+    }
+    |> Seq.reduce min
+    |> string
+
+printfn "%s" (problem44 100000L)
 
 // seq {
 //     for x in ((customUnfold ((+) 1L) 1L) |> Seq.map pentagonal |> (Seq.takeWhile (fun a -> a < 1000000L))) do
