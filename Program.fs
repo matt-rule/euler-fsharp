@@ -628,28 +628,19 @@ let customUnfold f state =
     Seq.unfold (fun x -> Some(x, f x)) state
 let pentagonals = customUnfold ((+) 1L) 1L |> Seq.map pentagonal
 
+// Might need to implement binary search for this
 let problem44 n =
     let pentagonalsBelowN = pentagonals |> Seq.takeWhile ((>) n)
-    let pentagonalPairs = 
     seq {
-        for x in pentagonalsBelowN do
-            for y in pentagonalsBelowN |> Seq.skipWhile ((>=) x) do
-                yield (x, y)
+        for D in pentagonalsBelowN do
+            for Pj in pentagonalsBelowN do
+                if (pentagonalsBelowN |> Seq.contains (D + Pj)) && (pentagonalsBelowN |> Seq.contains (Pj + D + Pj)) then
+                   yield D
     }
-    pentagonalsBelowN |> Seq.take 20 |> Seq.iter (fun x -> x |> string |> (printfn "%s"))
-    seq {
-        for x in pentagonalsBelowN do
-            for y in pentagonalsBelowN |> Seq.skipWhile ((>=) x) do
-                if (
-                    (pentagonalsBelowN |> Seq.contains (x+y))
-                    && (pentagonalsBelowN |> Seq.contains (abs (x-y)))
-                )
-                then yield (abs (x-y))
-    }
-    |> Seq.reduce min
+    |> Seq.head
     |> string
 
-printfn "%s" (problem44 100000L)
+printfn "%s" (problem44 100000000L)
 
 // seq {
 //     for x in ((customUnfold ((+) 1L) 1L) |> Seq.map pentagonal |> (Seq.takeWhile (fun a -> a < 1000000L))) do
