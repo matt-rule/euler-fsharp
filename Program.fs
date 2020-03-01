@@ -628,22 +628,38 @@ let customUnfold f state =
     Seq.unfold (fun x -> Some(x, f x)) state
 let pentagonals = customUnfold ((+) 1L) 1L |> Seq.map pentagonal
 
-// Assumes arr is sorted
-let binarySearch (arr : int[]) (val : int)
+// let rec binarySearchStep (arr : int[]) (x : int) lowerBound upperBound =
+//     if lowerBound = upperBound then
+//         false
+//     else
+//         let midPoint = abs(lowerBound - upperBound) / 2 + lowerBound
+//         if x = midPoint then
+//             true
+//         else
+//             let newLower, newUpper =
+//                 if x > midPoint then
+//                     midPoint, upperBound
+//                 else
+//                     lowerBound, midPoint
+//             binarySearchStep arr x newLower newUpper
 
-// Might need to implement binary search for this
-let problem44 n =
-    let pentagonalsBelowN = pentagonals |> Array.takeWhile ((>) n)
-    seq {
-        for D in pentagonalsBelowN do
-            for Pj in pentagonalsBelowN do
-                if (pentagonalsBelowN |> Seq.contains (D + Pj)) && (pentagonalsBelowN |> Seq.contains (Pj + D + Pj)) then
-                   yield D
-    }
-    |> Seq.head
-    |> string
+// // Assumes arr is sorted
+// let binarySearch (arr : int[]) (x : int) =
+//     binarySearchStep arr x 0 (arr.Length - 1)
 
-printfn "%s" (problem44 100000000L)
+// // Might need to implement binary search for this
+// let problem44 n =
+//     let pentagonalsBelowN = pentagonals |> Array.takeWhile ((>) n)
+//     seq {
+//         for D in pentagonalsBelowN do
+//             for Pj in pentagonalsBelowN do
+//                 if (pentagonalsBelowN |> Seq.contains (D + Pj)) && (pentagonalsBelowN |> Seq.contains (Pj + D + Pj)) then
+//                    yield D
+//     }
+//     |> Seq.head
+//     |> string
+
+// printfn "%s" (problem44 100000000L)
 
 // seq {
 //     for x in ((customUnfold ((+) 1L) 1L) |> Seq.map pentagonal |> (Seq.takeWhile (fun a -> a < 1000000L))) do
