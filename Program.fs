@@ -628,9 +628,12 @@ let customUnfold f state =
     Seq.unfold (fun x -> Some(x, f x)) state
 let pentagonals = customUnfold ((+) 1L) 1L |> Seq.map pentagonal
 
+// Assumes arr is sorted
+let binarySearch (arr : int[]) (val : int)
+
 // Might need to implement binary search for this
 let problem44 n =
-    let pentagonalsBelowN = pentagonals |> Seq.takeWhile ((>) n)
+    let pentagonalsBelowN = pentagonals |> Array.takeWhile ((>) n)
     seq {
         for D in pentagonalsBelowN do
             for Pj in pentagonalsBelowN do
