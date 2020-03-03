@@ -647,24 +647,6 @@ let rec binarySearchStep (arr : int64[]) (x : int64) (indexLowerBound : int) (in
 let binarySearch (arr : int64[]) (x : int64) =
     binarySearchStep arr x 0 (Array.length arr - 1)
 
-let rec binarySearchStep32 (arr : int[]) (x : int) (indexLowerBound : int) (indexUpperBound : int) =
-    if indexUpperBound - indexLowerBound < 2 then
-        x = arr.[indexLowerBound] || x = arr.[indexUpperBound]
-    else
-        let midPointIndex = abs(indexLowerBound - indexUpperBound) / 2 + indexLowerBound
-        if x = arr.[midPointIndex] then
-            true
-        else
-            let newLower, newUpper =
-                if x > arr.[midPointIndex] then
-                    midPointIndex, indexUpperBound
-                else
-                    indexLowerBound, midPointIndex
-            binarySearchStep32 arr x newLower newUpper
-
-let binarySearch32 (arr : int[]) (x : int) =
-    binarySearchStep32 arr x 0 (Array.length arr - 1)
-
 let problem44 n =
     let pentagonalsBelowN = pentagonals |> Seq.takeWhile ((>) n) |> Array.ofSeq
     let isPentagonalBelowN = binarySearch pentagonalsBelowN
@@ -677,13 +659,12 @@ let problem44 n =
     |> Seq.head
     |> string
 
-let pentagonal32 n = (n*(3L*n-1L))/2L
 let triangular n = n*(n+1L)/2L
 let hexagonal n = n*(2L*n-1L)
 
 // Find first after n
 let problem45 n limit=
-    let pentagonalsBelowLimit = customUnfold ((+) 1L) 1L |> Seq.map pentagonal32 |> Seq.takeWhile ((>) limit) |> Array.ofSeq
+    let pentagonalsBelowLimit = customUnfold ((+) 1L) 1L |> Seq.map pentagonal |> Seq.takeWhile ((>) limit) |> Array.ofSeq
     let triangularsBelowLimit = customUnfold ((+) 1L) 1L |> Seq.map triangular |> Seq.takeWhile ((>) limit) |> Array.ofSeq
     let hexagonalsBelowLimit = customUnfold ((+) 1L) 1L |> Seq.map hexagonal |> Seq.takeWhile ((>) limit) |> Array.ofSeq
     hexagonalsBelowLimit
