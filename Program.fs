@@ -628,24 +628,24 @@ let customUnfold f state =
     Seq.unfold (fun x -> Some(x, f x)) state
 let pentagonals = customUnfold ((+) 1L) 1L |> Seq.map pentagonal
 
-let rec binarySearchStep (arr : int64[]) (x : int64) lowerBound upperBound =
-    if upperBound - lowerBound < 2L then
-        x = lowerBound || x = upperBound
+let rec binarySearchStep (arr : int64[]) (x : int64) (indexLowerBound : int) (indexUpperBound : int) =
+    if indexUpperBound - indexLowerBound < 2 then
+        x = arr.[indexLowerBound] || x = arr.[indexUpperBound]
     else
-        let midPoint = abs(lowerBound - upperBound) / 2L + lowerBound
-        if x = midPoint then
+        let midPointIndex = abs(indexLowerBound - indexUpperBound) / 2 + indexLowerBound
+        if x = arr.[midPointIndex] then
             true
         else
             let newLower, newUpper =
-                if x > midPoint then
-                    midPoint, upperBound
+                if x > arr.[midPointIndex] then
+                    midPointIndex, indexUpperBound
                 else
-                    lowerBound, midPoint
+                    indexLowerBound, midPointIndex
             binarySearchStep arr x newLower newUpper
 
 // Assumes arr is sorted
 let binarySearch (arr : int64[]) (x : int64) =
-    binarySearchStep arr x 0L (int64 ((arr |> Array.length) - 1))
+    binarySearchStep arr x 0 (Array.length arr - 1)
 
 // Might need to implement binary search for this
 let problem44 n =
