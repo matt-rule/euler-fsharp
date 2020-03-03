@@ -647,7 +647,24 @@ let rec binarySearchStep (arr : int64[]) (x : int64) (indexLowerBound : int) (in
 let binarySearch (arr : int64[]) (x : int64) =
     binarySearchStep arr x 0 (Array.length arr - 1)
 
-// Might need to implement binary search for this
+let rec binarySearchStep32 (arr : int[]) (x : int) (indexLowerBound : int) (indexUpperBound : int) =
+    if indexUpperBound - indexLowerBound < 2 then
+        x = arr.[indexLowerBound] || x = arr.[indexUpperBound]
+    else
+        let midPointIndex = abs(indexLowerBound - indexUpperBound) / 2 + indexLowerBound
+        if x = arr.[midPointIndex] then
+            true
+        else
+            let newLower, newUpper =
+                if x > arr.[midPointIndex] then
+                    midPointIndex, indexUpperBound
+                else
+                    indexLowerBound, midPointIndex
+            binarySearchStep32 arr x newLower newUpper
+
+let binarySearch32 (arr : int[]) (x : int) =
+    binarySearchStep32 arr x 0 (Array.length arr - 1)
+
 let problem44 n =
     let pentagonalsBelowN = pentagonals |> Seq.takeWhile ((>) n) |> Array.ofSeq
     let isPentagonalBelowN = binarySearch pentagonalsBelowN
@@ -660,36 +677,19 @@ let problem44 n =
     |> Seq.head
     |> string
 
-printfn "%s" (problem44 100000000L)
-
-// seq {
-//     for x in ((customUnfold ((+) 1L) 1L) |> Seq.map pentagonal |> (Seq.takeWhile (fun a -> a < 1000000L))) do
-//     for y in ((customUnfold ((+) 1L) 1L) |> Seq.map pentagonal |> (Seq.takeWhile (fun b -> b < x))) do
-//     if (
-//         (pentagonals |> Seq.contains (x+y))
-//         && (pentagonals |> Seq.contains (abs (x-y)))
-//     )
-//     then
-//         yield abs (x-y)
-// }
-// |> Seq.iter (printfn "%i")
-//printfn "%s" problem44
-
-//Seq.initInfinite ((+) 1) |> Seq.map pentagonal |> Seq.take 20 |> Seq.iter (printfn "%i")
-
-let pentagonal32 n = (n*(3*n-1))/2
-let triangular n = n*(n+1)/2
-let hexagonal n = n*(2*n-1)
-let triangulars = Seq.initInfinite ((+) 1) |> Seq.map triangular
-let pentagonals32 = Seq.initInfinite ((+) 1) |> Seq.map pentagonal32
-let hexagonals = Seq.initInfinite ((+) 1) |> Seq.map hexagonal
+let pentagonal32 n = (n*(3L*n-1L))/2L
+let triangular n = n*(n+1L)/2L
+let hexagonal n = n*(2L*n-1L)
 
 // Find first after n
-let problem45 n =
-    hexagonals
-    |> Seq.where (fun x -> pentagonals32 |> Seq.contains x)
-    |> Seq.where (fun x -> triangulars |> Seq.contains x)
-    |> Seq.find(fun x -> x > n)
+let problem45 n limit=
+    let pentagonalsBelowLimit = customUnfold ((+) 1L) 1L |> Seq.map pentagonal32 |> Seq.takeWhile ((>) limit) |> Array.ofSeq
+    let triangularsBelowLimit = customUnfold ((+) 1L) 1L |> Seq.map triangular |> Seq.takeWhile ((>) limit) |> Array.ofSeq
+    let hexagonalsBelowLimit = customUnfold ((+) 1L) 1L |> Seq.map hexagonal |> Seq.takeWhile ((>) limit) |> Array.ofSeq
+    hexagonalsBelowLimit
+    |> Seq.where (binarySearch pentagonalsBelowLimit)
+    |> Seq.where (binarySearch triangularsBelowLimit)
+    |> Seq.find((<) n)
     |> string
 
 let isSquare n =
@@ -880,8 +880,10 @@ do validate 42 (problem42 "data/problem42.txt" 200) "162"
 
 // Skip 43 because it's evaluated ahead of time
 //do validate 43 problem43 "16695334890"
-do validate 46 problem46 "5777"
 
+do validate 44 (problem44 100000000L) "5482660"
+do validate 45 (problem45 40755L 100000000000L) "1533776805"
+do validate 46 problem46 "5777"
 
 do validate 47 (problem47 2) "14"
 do validate 47 (problem47 3) "644"
