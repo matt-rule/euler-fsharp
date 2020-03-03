@@ -1,879 +1,118 @@
-﻿open System;
+﻿namespace EulerApp
+
+open BenchmarkDotNet.Running
+open System;
 open System.IO;
 
-let problem1 n =
-    {1..n-1}
-    |> Seq.where(fun x -> x % 3 = 0 || x % 5 = 0)
-    |> Seq.sum
-    |> string
+module EulerValidation =
+    let validate (problemNumber : int) actualOutput expectedOutput =
+        "Problem "
+        + (string problemNumber)
+        + ". "
+        +   match expectedOutput with
+            | null -> "ATTEMPT (" + actualOutput + ")"
+            | expected ->
+                match actualOutput with
+                | output when output = expected -> "PASS (" + output + ")"
+                | output -> "FAIL (" + output + "/" + expected + ")"
 
-let problem2 n =
-    Seq.unfold(fun (x, y) -> Some(x + y, (y, x + y))) (0, 1)
-    |> Seq.takeWhile ((>=) n)
-    |> Seq.where(fun x -> x % 2 = 0)
-    |> Seq.sum
-    |> string
+    let ValidateOutput() = [|
+        validate 1 (EulerSolving.problem1 10) "23";
+        validate 1 (EulerSolving.problem1 1000) "233168";
+        validate 2 (EulerSolving.problem2 100) "44";
+        validate 2 (EulerSolving.problem2 4000000) "4613732";
+        validate 3 (EulerSolving.problem3 13195L) "29";
+        validate 3 (EulerSolving.problem3 600851475143L) "6857";
+        validate 4 (EulerSolving.problem4 2) "9009";
+        validate 4 (EulerSolving.problem4 3) "906609";
+        // TODO: Calculate 5 using prime factors.
+        // validate 5 problem5 "10" "2520";
+        // validate 5 problem5 "20" "232792560";
+        validate 6 (EulerSolving.problem6 10) "2640";
+        validate 6 (EulerSolving.problem6 100) "25164150";
+        validate 7 (EulerSolving.problem7 6) "13";
+        validate 7 (EulerSolving.problem7 10001) "104743";
+        validate 8 (EulerSolving.problem8 (File.ReadAllLines "data/problem8.txt") 4) "5832";
+        validate 8 (EulerSolving.problem8 (File.ReadAllLines "data/problem8.txt") 13) "23514624000";
+        // Skip 9 because it takes a long time.
+        validate 9 (EulerSolving.problem9 1000) "31875000";
+        validate 10 (EulerSolving.problem10 10L) "17";
+        // Skip this because it's too slow.
+        // validate 10 problem10 "2000000" "142913828922";
+        validate 11 (EulerSolving.problem11 (File.ReadAllLines "data/problem11.txt") 20) "70600674";
+        validate 12 (EulerSolving.problem12 5) "28";
+        validate 12 (EulerSolving.problem12 500) "76576500";
+        validate 13 (EulerSolving.problem13 (File.ReadAllLines "data/problem13.txt")) "5537376230";
+        // TODO: Validation for 14 is to make sure the sequence from 13 to 1 contains 10 terms.
+        // Skip 14 because it takes a long time.
+        // validate 14 problem14 "1000000" "837799";
+        validate 15 (EulerSolving.problem15 2) "6";
+        validate 15 (EulerSolving.problem15 20) "137846528820";
+        validate 16 (EulerSolving.problem16 15) "26";
+        validate 16 (EulerSolving.problem16 1000) "1366";
+        validate 17 (EulerSolving.problem17 5) "19";
+        validate 17 (EulerSolving.problem17 1000) "21124";
+        validate 18 (EulerSolving.problem18 (File.ReadAllLines "data/problem18.txt")) "1074";
+        validate 19 EulerSolving.problem19 "171";
+        validate 20 (EulerSolving.problem20 10) "27";
+        validate 20 (EulerSolving.problem20 100) "648";
+        validate 21 (EulerSolving.problem21 10000) "31626";
+        validate 22 (EulerSolving.problem22 (File.ReadAllText "data/problem22.txt")) "871198282";
+        // TODO: Optimise 23.
+        // validate 23 problem23 "28123" "0";
+        // TODO: Optimise
+        // validate 24 problem24 "1000000" "2783915460";
+        validate 25 (EulerSolving.problem25 1000) "4782";
+        validate 26 (EulerSolving.problem26 10) "7";
+        validate 26 (EulerSolving.problem26 1000) "983";
+        validate 27 (EulerSolving.problem27 1000) "-59231";
+        validate 28 (EulerSolving.problem28 2) "101";
+        validate 28 (EulerSolving.problem28 500) "669171001";
+        validate 29 (EulerSolving.problem29 5) "15";
+        validate 29 (EulerSolving.problem29 100) "9183";
+        validate 30 (EulerSolving.problem30 4) "19316";
+        validate 30 (EulerSolving.problem30 5) "443839";
+        validate 31 (EulerSolving.problem31 200) "73682";
+        // TODO: Optimise 32.
+        // validate 32 problem32 "45228";
+        validate 33 EulerSolving.problem33 "100";
+        validate 34 (EulerSolving.problem34 1000000) "40730";
+        validate 35 (EulerSolving.problem35 100) "13";
+        validate 35 (EulerSolving.problem35 1000000) "55";
+        validate 36 (EulerSolving.problem36 1000000) "872187";
+        validate 37 EulerSolving.problem37 "748317";
+        validate 38 EulerSolving.problem38 "932718654";
+        validate 39 (EulerSolving.problem39 1000) "840";
+        validate 40 (EulerSolving.problem40 6) "210";
+        validate 41 EulerSolving.problem41 "7652413";
+        validate 42 (EulerSolving.problem42 (File.ReadAllText "data/problem42.txt") 200) "162";
 
-// Check whether this handles 12 correctly because 2 is a prime factor of it twice (2 squared = 4).
-let problem3 n =
-    n
-    |> Seq.unfold(fun x ->
-        if x = 1L then None else
-            let y = {2L..x} |> Seq.find(fun y -> x % y = 0L)
-            Some(y, x / y)
-    )
-    |> Seq.max
-    |> string
+        // Skip 43 because it's evaluated ahead of time
+        //validate 43 problem43 "16695334890";
 
-let stringConcatFromCharSeq (input : char seq) =
-    input |> Seq.map string |> Seq.reduce (+)
+        validate 44 (EulerSolving.problem44 100000000L) "5482660";
+        validate 45 (EulerSolving.problem45 40755L 100000000000L) "1533776805";
+        validate 46 EulerSolving.problem46 "5777";
 
-let stringConcatFromIntSeq (input : int seq) =
-    input |> Seq.map string |> Seq.reduce (+)
+        validate 47 (EulerSolving.problem47 2) "14";
+        validate 47 (EulerSolving.problem47 3) "644";
+        // Skip 47 with input 4 because it takes a very long time.
+        //validate 47 (EulerSolving.problem47 4) "134043"";
 
-let problem4 n =
-    let max =
-        Seq.replicate n 9
-        |> stringConcatFromIntSeq
-        |> int
-    {1..max}
-    |> Seq.collect(fun x ->
-        {x+1..max}
-        |> Seq.map (fun y -> x*y |> string)
-        |> Seq.where (fun y -> y = (y |> seq |> Seq.rev |> stringConcatFromCharSeq))
-        |> Seq.map int
-    )
-    |> Seq.max
-    |> string
 
-// Takes a while. Try to optimise later. For example, could try to convert to string only once we have a value in a variable.
-// Though it would be surprising if it didn't do this already.
-let problem5 n =
-    Seq.initInfinite((+) 1)
-    |> Seq.where (fun x ->
-        {1..n}
-        |> Seq.forall(fun y -> x % y = 0)
-    )
-    |> Seq.head
-    |> string
+        validate 48 (EulerSolving.problem48 10) "0405071317";
+        validate 48 (EulerSolving.problem48 1000) "9110846700";
 
-let problem6 n =
-    let naturalNumbers =
-        Seq.initInfinite((+) 1)
-        |> Seq.take n
-    let sumOfSquares = Seq.sumBy ((fun x -> x*x)) naturalNumbers
-    let squareOfSum = pown (Seq.sum naturalNumbers) 2
-    abs(sumOfSquares - squareOfSum)
-    |> string
+        //do validate 49 (EulerSolving.problem49 "148748178147") "296962999629";
 
-let isPrime x =
-    x > 1 && (
-        {2..(float >> sqrt >> int) x}
-        |> Seq.forall (fun y -> x % y <> 0)         // Consider (fun y -> x % y <> LanguagePrimitives.GenericZero)
-    )
-
-let isPrime64 l =
-    l > 1L && (
-        {2L..(float >> sqrt >> int64) l}
-        |> Seq.forall (fun y -> l % y <> 0L)        // Consider (fun y -> x % y <> LanguagePrimitives.GenericZero)
-    )
-
-let primes = Seq.initInfinite((+) 1) |> Seq.where isPrime
-
-let problem7 n =
-    let naturalNumbers = Seq.initInfinite((+) 1)
-    naturalNumbers
-    |> Seq.where isPrime
-    |> Seq.zip naturalNumbers
-    |> Seq.find(fun (x, y) -> x = n)
-    |> snd
-    |> string
-
-// TODO: Seq.windowed can be used in other places too
-let problem8 file n =
-    let productOfChars =
-        Array.map (string >> int64)
-        >> Array.reduce (*)
-    File.ReadAllLines file
-    |> String.concat ""
-    |> Seq.windowed n
-    |> Seq.map productOfChars
-    |> Seq.max
-    |> string
-
-let problem9 n =
-    seq {
-        for x in 1..n  do
-        for y in x+1..n do
-        for z in y+1..n do
-        if (x*x + y*y = z*z) && (x + y + z = 1000)
-        then yield (x * y * z)
-    }
-    |> Seq.head
-    |> string
-
-let problem10 n =
-    {2L..n}
-    |> Seq.where isPrime64
-    |> Seq.sum
-    |> string
-
-let intSqrt = float >> sqrt >> int
-
-// TODO: Consider the triangular number sequence on problem 45.
-
-let problem11 filename n =
-    let numberArray =
-        File.ReadAllLines filename
-        |> Array.map (fun s -> s.Split ' ' |> Array.map int32)
-    seq {
-        for a in 0..(n-5) do
-            for b in 0..(n-5) do
-                yield seq {
-                    for x in 0..3 -> numberArray.[a+x].[b+x]
-                }
-                yield seq {
-                    for x in 0..3 -> numberArray.[a+4-x].[b+x]
-                }
-            for b in 0..(n-1) do
-                yield seq {
-                    for x in 0..3 -> numberArray.[a+x].[b]
-                }
-                yield seq {
-                    for x in 0..3 -> numberArray.[b].[a+x]
-                }
-    }
-    |> Seq.map (Seq.reduce (*))
-    |> Seq.max
-    |> string
-
-let problem12 n =
-    // Triangular numbers.
-    Seq.initInfinite ((+) 1)
-    |> Seq.scan (+) 0
-    |> Seq.find(fun x ->
-        // Get all divisors for x up to sqrt(x)
-        // This might count the square root twice
-        {1..(intSqrt x)}
-        |> Seq.where(fun y -> x % y = 0)
-        |> Seq.length > n / 2
-    )
-    |> string
-
-let bigIntDigits n = n |> string |> Seq.map (string >> int)
-
-let problem13 filename =
-    File.ReadAllLines filename
-    |> Seq.map bigint.Parse
-    |> Seq.reduce (+)
-    |> bigIntDigits
-    |> Seq.take 10
-    |> stringConcatFromIntSeq
-    |> string
+        validate 50 (EulerSolving.problem50 1000000) "997651";
     
-// let problem14 n =
-//     let collatz n = if n % 2L = 0L then (n / 2L) else (n*3L + 1L)
-//     let rec collatzSequence n = seq {
-//         yield n
-//         if n <> 1L then yield! (collatzSequence (collatz n))
-//     }
-//     {1L..n-1L}
-//     |> Seq.maxBy (collatzSequence >> Seq.length)
-//     |> string
-    
-// printfn "%s" (problem14 1000000L)
-
-let problem15 n =
-    let rec countLattice state step maxStep =
-        if step = maxStep
-        then
-            (state |> Seq.pairwise |> Seq.map(fun (x, y) -> x + y))
-            |> Seq.exactlyOne
-        else
-            countLattice
-                (
-                    if (step <= maxStep / 2)
-                    then
-                        (Seq.concat [{1L..1L}; (state |> Seq.pairwise |> Seq.map(fun (x, y) -> x + y)); {1L..1L}])
-                    else
-                        (state |> Seq.pairwise |> Seq.map(fun (x, y) -> x + y))
-                )
-                (step + 1)
-                maxStep
-    (countLattice {1L..1L} 1 (n*2))
-    |> string
-
-let rec nest p f x = if p=0 then x else nest (p-1) f (f x)
-let sumOfDigits = string >> Seq.sumBy (string >> int)
-
-let problem16 n =
-    nest n ((*) 2I) 1I
-    |> sumOfDigits
-    |> string
-
-let problem17 n =
-    let oneToNineteen = [| 3; 3; 5; 4; 4; 3; 5; 5; 4; 3; 6; 6; 8; 8; 7; 7; 9; 8; 8 |]
-    let twentyToNinety = [| 6; 6; 5; 5; 5; 7; 6; 6 |]
-    let rec letterCount num =
-        if num = 1000 then 11
-        else if num > 99 then (letterCount (num/100)) + 7 + (if (letterCount (num%100)) > 0 then 3 + (letterCount (num%100)) else 0) 
-        else if num > 19 then twentyToNinety.[num/10-2] + letterCount (num%10)
-        else if num > 0 then oneToNineteen.[num-1]
-        else 0
-    {1..n}
-    |> Seq.sumBy letterCount
-    |> string
-
-let maxTotalForTriangle filename =
-    let addMaxXToY ((x1, x2), y) = y + max x1 x2
-    let addPairwiseMax x y =
-        Array.zip (Array.pairwise x) y
-        |> Array.map addMaxXToY
-    File.ReadAllLines filename
-    |> Array.map(fun s -> s.Split(' ') |> Array.map int)
-    |> Array.rev
-    |> Array.reduce addPairwiseMax
-    |> Array.exactlyOne
-    |> string
-
-let problem18 = maxTotalForTriangle
-
-let problem19 =
-    let isLeapYear n = (n % 4 = 0) && (n % 100 <> 0 || n % 400 = 0)
-    let daysInMonth y m =
-        let daysInFeb = if isLeapYear y then 29 else 28
-        [| 31; daysInFeb; 31; 30; 31; 30; 31; 31; 30; 31; 30; 31 |].[m]
-    seq {
-        for y in 1901..2000 do
-            for m in 0..11 ->
-                daysInMonth y m
-    }
-    |> Seq.scan (fun x y -> (x + y) % 7) 0
-    |> Seq.where ((=) 0)
-    |> Seq.length
-    |> string
-
-let problem20 (n : int32) =
-    {1I..(bigint n)}
-    |> Seq.fold (fun x y -> bigint.Multiply (x, y)) 1I
-    |> sumOfDigits
-    |> string
-
-let sumOfProperDivisors n =
-    {1..n-1}
-    |> Seq.where(fun y -> n % y = 0)
-    |> Seq.sum
-
-let problem21 n =
-    {1..n-1}
-    |> Seq.where(fun x -> (sumOfProperDivisors >> sumOfProperDivisors) x = x && sumOfProperDivisors x <> x)
-    |> Seq.sum
-    |> string
-
-let wordScore =
-    Seq.sumBy (int >> ((+) (1 - int 'A')))
-
-let problem22 filename =
-    (File.ReadAllText filename).Replace("\"", "").Split(',')
-    |> Array.sort
-    |> Array.map wordScore
-    |> Seq.zip (Seq.initInfinite((+) 1))
-    |> Seq.sumBy (fun (x, y) -> x * y)
-    |> string
-
-let problem23 n =
-    let abundantNumbers = 
-        {1..n}
-        |> Seq.where (fun x -> sumOfProperDivisors x > x)
-        |> Seq.toArray
-    let canBeWrittenAsTheSumOfTwoAbundantNumbers p = abundantNumbers |> Array.exists(fun x -> Array.contains (p - x) abundantNumbers)
-    {1..n}
-    |> Seq.where(canBeWrittenAsTheSumOfTwoAbundantNumbers >> not)
-    |> Seq.sum
-    |> string
-
-let rec getPermutationsWithPDigits (s : string) p =
-    seq {
-        for i in {0..9} |> Seq.where (string >> s.Contains >> not) do 
-        match p with
-        | 1 -> yield (s + (string i))
-        | _ -> yield! (getPermutationsWithPDigits (s + (string i)) (p - 1))
-    }
-
-let problem24 n =
-    getPermutationsWithPDigits "" 10
-    |> Seq.item n
-
-let problem25 n =
-    let fibonacci = Seq.unfold(fun (x, y) -> Some(x + y, (y, x + y))) (0I, 1I)
-    let indexedFibonacci = fibonacci |> Seq.zip (Seq.initInfinite((+) 1) |> Seq.skip 1)
-    indexedFibonacci
-    |> Seq.map (fun (x, y) -> (x, string y))
-    |> Seq.find(fun (x, y) -> y.Length >= n)
-    |> fst
-    |> string
-
-// The only state we need to persist is the remainder; we throw
-// away the actual result of the division.
-// Note that if the remainder becomes 0, the next iteration will be 0
-// and it will report a cycle of size 1. This doesn't matter for Problem 26.
-let rec recurringCycleIteration accumulatedList divisor =
-    let tenLastRemainder = List.last accumulatedList*10
-    let remainder = tenLastRemainder - (int (tenLastRemainder/divisor))*divisor
-    let index = accumulatedList |> List.tryFindIndex ((=) remainder)
-    if index.IsSome
-    then List.length accumulatedList - index.Value
-    else recurringCycleIteration (accumulatedList @ [remainder]) divisor
-
-let problem26 n =
-    {2..n-1}
-    |> Seq.maxBy (recurringCycleIteration [1])
-    |> string
-
-// Some type annotations can be removed
-// Some sequences can be {1..n} instead of seq {1..n}.
-// A lot of lambda functions can be simplified for example
-// Seq.initInfinite((+) 1) instead of Seq.initInfinite(fun x -> x + 1)
-// and Seq.maxBy snd instead of Seq.maxBy(fun x -> snd x)
-// Maxby seems very useful for simplifying structure
-// You can reduce the line count by declaring a function further up,
-// then avoiding brackets around it when using it
-let problem27 cap =
-    let isPrime n =
-        (n > 0)
-        && { 2..(n |> (float >> sqrt >> int)) }
-        |> Seq.forall (fun x -> n % x <> 0)
-    let consecutivePrimes a b =
-        Seq.initInfinite((+) 1)
-        |> Seq.find(fun n -> (n*n + a*n + b) |> isPrime |> not)
-    seq {
-        for a in -(cap-1)..(cap-1) do
-        for b in -cap..cap ->
-            (a*b, consecutivePrimes a b)
-    }
-    |> Seq.maxBy snd |> fst |> string
-
-// The first row is the total of the four sequences, evaluated at each successive ring.
-// 4 is used at the beginning because each of the four sequences needs to begin with 1.
-// The second row is the difference between each successive number and its
-// predecessor; the third row is the same logic applied again.
-// Note the numbers 4, 20, 32 on the left here. These are used in the function.
-//  4   24  76  160 276
-//      20  52  84  116
-//          32  32  32
-let problem28 n =
-    Seq.initInfinite (fun _ -> 32)
-    |> Seq.scan (+) 20
-    |> Seq.scan (+) 4
-    |> Seq.skip 1
-    |> Seq.take n
-    |> Seq.sum
-    |> (+) 1
-    |> string
-
-let problem29 (n : int32) =
-    seq {
-        for a in 2I..(bigint n) do
-        for b in 2..n -> a**b
-    }
-    |> Seq.distinct
-    |> Seq.length
-    |> string
-
-let digits n = n |> string |> Seq.map (string >> int)
-
-let problem30 n =
-    let max = (pown 9 n)*n
-
-    {2..max}
-    |> Seq.where (fun x -> x = (x |> digits |> Seq.sumBy(fun y -> (pown y n))))
-    |> Seq.sum
-    |> string
-
-let problem31 (n : int) =
-    let coins = [| 1; 2; 5; 10; 20; 50; 100; 200 |]
-    let rec countStep (currentTotal : int) (currentIndex : int) =
-        seq {
-            for i in { currentIndex..((coins |> Array.length) - 1) } do
-                match (currentTotal + (coins.[i])) with
-                | x when x = n -> yield ()
-                | x when x < n -> yield! (countStep (currentTotal + (coins |> Array.item i)) i)
-                | _ -> do ()
-        }
-    countStep 0 0
-    |> Seq.length
-    |> string
-
-// let problem32 =
-//     let rec getPermutationsOneToNine (s : string) p =
-//         seq {
-//             for i in {1..9} |> Seq.where (string >> s.Contains >> not) do 
-//             match p with
-//             | 1 -> yield (s + (string i))
-//             | _ -> yield! (getPermutationsOneToNine (s + (string i)) (p - 1))
-//         }
-//     let skipTakeDigits x y = Seq.skip x >> Seq.take y >> stringConcatFromCharSeq >> int
-//     let allPermutations = (getPermutationsOneToNine "" 9)
-//     allPermutations
-//     |> Seq.collect(fun x ->
-//         seq {
-//             for productDigits in {3..7} do
-//             for multiplierDigits in {1..(8-productDigits)} do
-//             let multiplicandDigits = 9 - productDigits - multiplierDigits
-//             let multiplicand = x |> skipTakeDigits 0 multiplicandDigits
-//             let multiplier = x |> skipTakeDigits multiplicandDigits multiplierDigits
-//             let product = x |> skipTakeDigits (multiplicandDigits + multiplierDigits) productDigits
-//             if (multiplicand * multiplier = product)
-//             then yield product
-//         }
-//     )
-//     |> Seq.distinct
-//     |> Seq.sum
-//     |> string
-
-let fractionsAreEqual a b =
-    (fst a) * (snd b) = (snd a) * (fst b)
-
-let multiplyFractions a b =
-    ((fst a) * (fst b), (snd a) * (snd b))
-
-let lowestCommonTerms fraction =
-    let divisor =
-        {(snd fraction).. -1 .. 1}
-        |> Seq.find(fun x -> ((fst fraction) % x = 0) && ((snd fraction) % x = 0))
-    ((fst fraction) / divisor, (snd fraction) / divisor)
-
-let isCuriousFraction x =
-    let numFstDigit = (fst x) / 10
-    let numSndDigit = (fst x) % 10
-    let denFstDigit = (snd x) / 10
-    let denSndDigit = (snd x) % 10
-
-    if (numSndDigit = 0 && denSndDigit = 0)
-    then false
-    else
-        (numSndDigit = denSndDigit && fractionsAreEqual ((fst x), (snd x)) (numFstDigit, denFstDigit))
-        || (numSndDigit = denFstDigit && fractionsAreEqual ((fst x), (snd x)) (numFstDigit, denSndDigit))
-        || (numFstDigit = denSndDigit && fractionsAreEqual ((fst x), (snd x)) (numSndDigit, denFstDigit))
-        || (numFstDigit = denFstDigit && fractionsAreEqual ((fst x), (snd x)) (numSndDigit, denSndDigit))
-
-let twoDigitFractions =
-    seq {
-        for num in 10..99 do
-        for den in (num+1)..99 -> (num, den)
-    }
-
-let curiousFractions = twoDigitFractions |> Seq.where isCuriousFraction
-
-let problem33 =
-    curiousFractions
-    |> Seq.reduce multiplyFractions
-    |> lowestCommonTerms
-    |> snd
-    |> string
-
-let factorial n =
-    if n = 0 then 1
-    else {1..n} |> Seq.reduce ( * )
-        
-let problem34 n =
-    let sumOfDigitFactorials =
-        digits >> Seq.map factorial >> Seq.sum
-    {3..n}
-    |> Seq.where(fun x -> x = (sumOfDigitFactorials x))
-    |> Seq.sum
-    |> string
-
-let problem35 n =
-    let isCircularPrime x =
-        if (x |> isPrime |> not) then
-            false
-        else
-            let digitsX = digits x
-            let numDigits = (digitsX |> Seq.length) - 1
-            {1..numDigits}
-            |> Seq.forall (fun y ->
-                Seq.concat [
-                    (digitsX |> Seq.skip y);
-                    (digitsX |> Seq.take y)
-                ]
-                |> stringConcatFromIntSeq
-                |> int
-                |> isPrime
-            )
-    {2..n-1}
-    |> Seq.where isCircularPrime
-    |> Seq.length
-    |> string
-
-let problem36 n =
-    let isPalindrome s = s = (s |> Seq.rev |> stringConcatFromCharSeq)
-    {1..n-1}
-    |> Seq.where (fun x ->
-        isPalindrome (System.Convert.ToString(x, 2))
-        && isPalindrome (System.Convert.ToString(x, 10))
-    )
-    |> Seq.sum
-    |> string
-
-let truncatableInBothDirections n =
-    let nStr = string n
-    {1..((nStr |> String.length) - 1)}
-    |> Seq.forall(fun x ->
-        nStr |> Seq.take x |> stringConcatFromCharSeq |> int |> isPrime
-        && nStr |> Seq.skip x |> stringConcatFromCharSeq |> int |> isPrime
-    )
-
-let problem37 =
-    {11..1000000}
-    |> Seq.where isPrime
-    |> Seq.where truncatableInBothDirections
-    |> Seq.take 11      // This 11 and the 11 at the top of this function have nothing to do with each other.
-    |> Seq.toList
-    |> Seq.sum
-    |> string
-
-let problem38 =
-    let panDigitalOneToNine s = {'1'..'9'} |> Seq.forall (fun x -> s |> Seq.contains x)
-    let numberStrings =
-        {1..99999}
-        |> Seq.collect (fun x ->
-            {1..9}
-            |> Seq.map (fun y ->
-                {1..y}
-                |> Seq.map (( * ) x >> string)
-                |> Seq.reduce (+)
-            )
-        )
-        |> Seq.where (fun x -> x.Length = 9 && panDigitalOneToNine x)
-    numberStrings
-    |> Seq.max
-    |> string
-
-// TODO: There has to be a better way to do anything than
-// by yielding a sequence of units to get the length of it.
-let problem39 n =
-    {3..n-1}
-    |> Seq.maxBy (fun p ->
-        seq {
-            for c in 1..(p-2) do
-            for b in 1..(p-c-1) do
-            let a = p-c-b
-            if a*a+b*b=c*c then yield ()
-        }
-        |> Seq.length
-    )
-    |> string
-
-let problem40 n =
-    let getDigitAtIndex i =
-        Seq.initInfinite(fun z -> z + 1)
-        |> Seq.collect digits
-        |> Seq.item i
-    {0..n}
-    |> Seq.map (pown 10 >> (+) -1 >> getDigitAtIndex)
-    |> Seq.reduce (*)
-    |> string
-
-let rec getPermutationsWithPDigitsBackwards max (s : string) p =
-    seq {
-        for i in {max .. -1 .. 1} |> Seq.where (string >> s.Contains >> not) do 
-        match p with
-        | 1 -> yield (s + (string i))
-        | _ -> yield! (getPermutationsWithPDigitsBackwards max (s + (string i)) (p - 1))
-    }
-
-let problem41 =
-    let isPandigital n =
-        let nStr = string n
-        {1..(String.length nStr)}
-        |> Seq.map (string >> Seq.head)
-        |> Seq.forall(fun x -> nStr |> Seq.contains x)
-    {9 .. -1 .. 1}
-    |> Seq.collect (fun x -> getPermutationsWithPDigitsBackwards x "" x)
-    |> Seq.map int
-    |> Seq.find (fun x -> isPrime x && isPandigital x)
-    |> string
-
-let problem42 filename n =
-    let firstNTriangularNumbers =
-        Seq.initInfinite ((+) 1)
-        |> Seq.scan (+) 0
-        |> Seq.take n
-        |> Array.ofSeq
-    (File.ReadAllText filename).Replace("\"", "").Split(',')
-    |> Seq.map wordScore
-    |> Seq.where(fun x -> firstNTriangularNumbers |> Seq.contains x)
-    |> Seq.length
-    |> string
-
-// let problem43 =
-//     getPermutationsWithPDigits "" 10
-//     |> Seq.where(fun x ->
-//         {0..6}
-//         |> Seq.forall(fun y ->
-//             x
-//             |> Seq.skip (y + 1)
-//             |> Seq.take 3
-//             |> stringConcatFromCharSeq
-//             |> int
-//             |> (fun z -> z % (primes |> Seq.item y) = 0)
-//         )
-//     )
-//     |> Seq.sumBy int64
-//     |> string
-
-let pentagonal n = (n*(3L*n-1L))/2L
-let customUnfold f state =
-    Seq.unfold (fun x -> Some(x, f x)) state
-let pentagonals = customUnfold ((+) 1L) 1L |> Seq.map pentagonal
-
-let rec binarySearchStep (arr : int64[]) (x : int64) (indexLowerBound : int) (indexUpperBound : int) =
-    if indexUpperBound - indexLowerBound < 2 then
-        x = arr.[indexLowerBound] || x = arr.[indexUpperBound]
-    else
-        let midPointIndex = abs(indexLowerBound - indexUpperBound) / 2 + indexLowerBound
-        if x = arr.[midPointIndex] then
-            true
-        else
-            let newLower, newUpper =
-                if x > arr.[midPointIndex] then
-                    midPointIndex, indexUpperBound
-                else
-                    indexLowerBound, midPointIndex
-            binarySearchStep arr x newLower newUpper
-
-// Assumes arr is sorted
-let binarySearch (arr : int64[]) (x : int64) =
-    binarySearchStep arr x 0 (Array.length arr - 1)
-
-let problem44 n =
-    let pentagonalsBelowN = pentagonals |> Seq.takeWhile ((>) n) |> Array.ofSeq
-    let isPentagonalBelowN = binarySearch pentagonalsBelowN
-    seq {
-        for D in pentagonalsBelowN do
-            for Pj in pentagonalsBelowN do
-                if (isPentagonalBelowN (D + Pj)) && (isPentagonalBelowN (Pj + D + Pj)) then
-                   yield D
-    }
-    |> Seq.head
-    |> string
-
-let triangular n = n*(n+1L)/2L
-let hexagonal n = n*(2L*n-1L)
-
-// Find first after n
-let problem45 n limit=
-    let pentagonalsBelowLimit = customUnfold ((+) 1L) 1L |> Seq.map pentagonal |> Seq.takeWhile ((>) limit) |> Array.ofSeq
-    let triangularsBelowLimit = customUnfold ((+) 1L) 1L |> Seq.map triangular |> Seq.takeWhile ((>) limit) |> Array.ofSeq
-    let hexagonalsBelowLimit = customUnfold ((+) 1L) 1L |> Seq.map hexagonal |> Seq.takeWhile ((>) limit) |> Array.ofSeq
-    hexagonalsBelowLimit
-    |> Seq.where (binarySearch pentagonalsBelowLimit)
-    |> Seq.where (binarySearch triangularsBelowLimit)
-    |> Seq.find((<) n)
-    |> string
-
-let isSquare n =
-    {1..intSqrt n}
-    |> Seq.exists(fun x -> x*x = n)
-
-let canBeWrittenAsSumOfPrimeAndTwiceASquare n =
-    {1..n-1}
-    |> Seq.where isPrime
-    |> Seq.exists(fun x -> (n-x) % 2 = 0 && ((n-x)/2) |> isSquare)
-
-let problem46 =
-    Seq.initInfinite((+) 1)
-    |> Seq.skip 1
-    |> Seq.where(fun x -> x % 2 = 1 && not (isPrime x))
-    |> Seq.find (canBeWrittenAsSumOfPrimeAndTwiceASquare >> not)
-    |> string
-
-let primeFactors n =
-    (
-        Seq.unfold (fun p ->
-        if p = 1
-        then None
-        else
-            primes
-            |> Seq.find(fun x -> p % x = 0) 
-            |> (fun x -> Some(x, p / x))
-        ) n
-    )
-    |> Seq.distinct
-
-let primeFactorsForRange n p =
-    {0..(n-1)}
-    |> Seq.map (fun x -> primeFactors (p+x))
-
-let consecutiveNumbersHaveNDistinctPrimeFactors n p =
-    primeFactorsForRange n p
-    |> Seq.forall(fun x -> x |> Seq.length = n)
-
-let problem47 n =
-    Seq.initInfinite((+) 1)
-    |> Seq.find (consecutiveNumbersHaveNDistinctPrimeFactors n)
-    |> string
-
-let problem48 n =
-    {1..n}
-    |> Seq.sumBy (fun x -> (bigint x) ** x)
-    |> string
-    |> (fun x -> x |> Seq.skip (x.Length - 10))
-    |> stringConcatFromCharSeq
-
-let isPermutation x y =
-    (x |> digits |> Seq.sort |> stringConcatFromIntSeq) = (y |> digits |> Seq.sort |> stringConcatFromIntSeq)
-
-let problem49 s =
-    seq {
-        for x in 1000..9999 do
-            if isPrime x then
-                for y in 1..((9999-x)/2) do
-                    if (isPermutation x (x+y)) && (isPermutation x (x+y*2)) && isPrime (x+y) && isPrime (x+y*2) then
-                        yield (stringConcatFromIntSeq (Seq.concat [digits x; (digits (x+y)); (digits (x+y*2))]))
-    }
-    |> Seq.find((<>) s)
-
-let arrayPrimesBelowN n =
-    primes
-    |> Seq.takeWhile ((>) n)
-    |> Array.ofSeq
-
-//do primesBelowOneMillion |> Array.iter (printfn "%i")
-
-let rec iteratePrimes (primesArray : int array) (n : int) (indicesSoFar : int) (total : int) (indexToAdd : int) : (int*int) seq =
-    seq {
-        if indexToAdd >= (primesArray |> Array.length)
-        then ()
-        else
-            let newTotal = total + primesArray.[indexToAdd]
-            if newTotal >= n
-            then ()
-            else
-                if isPrime newTotal then yield (newTotal, indicesSoFar + 1)
-                yield! iteratePrimes primesArray n (indicesSoFar + 1) newTotal (indexToAdd + 1)
-    }
-
-let problem50 n =
-    let primesArray = arrayPrimesBelowN n
-    [0..(n-1)]
-    |> Seq.collect (iteratePrimes primesArray n 0 0)
-    |> Seq.maxBy snd
-    |> fst
-    |> string
-
-//let problem50 n =
-    // generate a list of primes below one million
-    // for each prime in the list p
-    //     create a sequence q of numbers from p to list.length
-    //         fold over q with the following function:
-    //             fun x ->
-            //         add x to the total
-            //             if total is over 1 million then None
-            //             if total is prime then
-            //                 yield a tuple: (t = total, u = number of primes which were summed)
-    // select the tuple in the above sequence with max u
-    // take t
-    // convert to string
-
-let validate (problemNumber : int) actualOutput expectedOutput =
-    "Problem "
-    + (string problemNumber)
-    + ". "
-    +   match expectedOutput with
-        | null -> "ATTEMPT (" + actualOutput + ")";
-        | expected ->
-            match actualOutput with
-            | output when output = expected -> "PASS (" + output + ")";
-            | output -> "FAIL (" + output + "/" + expected + ")";
-    |> printfn "%s"
-
-do validate 1 (problem1 10) "23"
-do validate 1 (problem1 1000) "233168"
-do validate 2 (problem2 100) "44"
-do validate 2 (problem2 4000000) "4613732"
-do validate 3 (problem3 13195L) "29"
-do validate 3 (problem3 600851475143L) "6857"
-do validate 4 (problem4 2) "9009"
-do validate 4 (problem4 3) "906609"
-// TODO: Calculate 5 using prime factors.
-// do validate 5 problem5 "10" "2520"
-// do validate 5 problem5 "20" "232792560"
-do validate 6 (problem6 10) "2640"
-do validate 6 (problem6 100) "25164150"
-do validate 7 (problem7 6) "13"
-do validate 7 (problem7 10001) "104743"
-do validate 8 (problem8 "data/problem8.txt" 4) "5832"
-do validate 8 (problem8 "data/problem8.txt" 13) "23514624000"
-// Skip 9 because it takes a long time.
-do validate 9 (problem9 1000) "31875000"
-do validate 10 (problem10 10L) "17"
-// Skip this because it's too slow.
-// do validate 10 problem10 "2000000" "142913828922"
-do validate 11 (problem11 "data/problem11.txt" 20) "70600674"
-do validate 12 (problem12 5) "28"
-do validate 12 (problem12 500) "76576500"
-do validate 13 (problem13 "data/problem13.txt") "5537376230"
-// TODO: Validation for 14 is to make sure the sequence from 13 to 1 contains 10 terms.
-// Skip 14 because it takes a long time.
-// do validate 14 problem14 "1000000" "837799"
-do validate 15 (problem15 2) "6"
-do validate 15 (problem15 20) "137846528820"
-do validate 16 (problem16 15) "26"
-do validate 16 (problem16 1000) "1366"
-do validate 17 (problem17 5) "19"
-do validate 17 (problem17 1000) "21124"
-do validate 18 (problem18 "data/problem18.txt") "1074"
-do validate 19 problem19 "171"
-do validate 20 (problem20 10) "27"
-do validate 20 (problem20 100) "648"
-do validate 21 (problem21 10000) "31626"
-do validate 22 (problem22 "data/problem22.txt") "871198282"
-// TODO: Optimise 23.
-// do validate 23 problem23 "28123" "0"
-// TODO: Optimise
-// do validate 24 problem24 "1000000" "2783915460"
-do validate 25 (problem25 1000) "4782"
-do validate 26 (problem26 10) "7"
-do validate 26 (problem26 1000) "983"
-do validate 27 (problem27 1000) "-59231"
-do validate 28 (problem28 2) "101"
-do validate 28 (problem28 500) "669171001"
-do validate 29 (problem29 5) "15"
-do validate 29 (problem29 100) "9183"
-do validate 30 (problem30 4) "19316"
-do validate 30 (problem30 5) "443839"
-do validate 31 (problem31 200) "73682"
-// TODO: Optimise 32.
-// do validate 32 problem32 "45228"
-do validate 33 problem33 "100"
-do validate 34 (problem34 1000000) "40730"
-do validate 35 (problem35 100) "13"
-do validate 35 (problem35 1000000) "55"
-do validate 36 (problem36 1000000) "872187"
-do validate 37 problem37 "748317"
-do validate 38 problem38 "932718654"
-do validate 39 (problem39 1000) "840"
-do validate 40 (problem40 6) "210"
-do validate 41 problem41 "7652413"
-do validate 42 (problem42 "data/problem42.txt" 200) "162"
-
-// Skip 43 because it's evaluated ahead of time
-//do validate 43 problem43 "16695334890"
-
-do validate 44 (problem44 100000000L) "5482660"
-do validate 45 (problem45 40755L 100000000000L) "1533776805"
-do validate 46 problem46 "5777"
-
-do validate 47 (problem47 2) "14"
-do validate 47 (problem47 3) "644"
-// Skip 47 with input 4 because it takes a very long time.
-//do validate 47 (problem47 4) "134043"
-
-do validate 48 (problem48 10) "0405071317"
-do validate 48 (problem48 1000) "9110846700"
-
-//do validate 49 (problem49 "148748178147") "296962999629"
-
-do validate 50 (problem50 1000000) "997651"
+    |]
+
+module Program =
+    [<EntryPoint>]
+    let main args =    
+        printfn "args: %A" args
+        printfn "env.cmdline: %A" <| Environment.GetCommandLineArgs()   
+        printfn "%A" (BenchmarkRunner.Run<EulerSolutionBenchmarks>()) 
+        0

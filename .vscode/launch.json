@@ -2,12 +2,38 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": ".NET Core Launch (console)",
+            "name": "Output Solutions",
             "type": "coreclr",
             "request": "launch",
             "preLaunchTask": "build",
             "program": "dotnet",
-            "args": ["${workspaceRoot}/bin/Debug/netcoreapp3.0/euler.dll"],
+            "args": [
+                "run",
+                "-c",
+                "Release",
+                "${workspaceRoot}/bin/Release/netcoreapp3.0/euler.dll",
+            ],
+            "cwd": "${workspaceRoot}",
+            "externalConsole": false,
+            "stopAtEntry": false,
+            "internalConsoleOptions": "openOnSessionStart",
+            "logging": {
+                "moduleLoad": false
+            }
+        },
+        {
+            "name": "Run Benchmarks",
+            "type": "coreclr",
+            "request": "launch",
+            "preLaunchTask": "build",
+            "program": "dotnet",
+            "args": [
+                "run",
+                "-c",
+                "Release",
+                "${workspaceRoot}/bin/Release/netcoreapp3.0/euler.dll",
+                "benchmarks"
+            ],
             "cwd": "${workspaceRoot}",
             "externalConsole": false,
             "stopAtEntry": false,

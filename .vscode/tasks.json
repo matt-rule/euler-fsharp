@@ -7,7 +7,9 @@
         {
             "taskName": "build",
             "args": [
-                "${workspaceRoot}/euler.fsproj"
+                "${workspaceRoot}/euler.fsproj",
+                "-c",
+                "Release",
             ],
             "isBuildCommand": true,
             "problemMatcher": "$msCompile"
