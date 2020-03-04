@@ -48,15 +48,65 @@ module EulerSolving =
         |> Seq.max
         |> string
 
+    let isPrime x =
+        x > 1 && (
+            {2..(float >> sqrt >> int) x}
+            |> Seq.forall (fun y -> x % y <> 0)         // Consider (fun y -> x % y <> LanguagePrimitives.GenericZero)
+        )
+
+    let primes = Seq.initInfinite((+) 1) |> Seq.where isPrime
+
+    let primeFactors n =
+        (
+            Seq.unfold (fun p ->
+            if p = 1
+            then None
+            else
+                primes
+                |> Seq.find(fun x -> p % x = 0) 
+                |> (fun x -> Some(x, p / x))
+            ) n
+        )
+        |> Seq.distinct
+
+    let rec numberOfTimesDivisible x y n =
+        if (x % y <> 0)
+        then n
+        else numberOfTimesDivisible (x/y) y (n+1)
+
+    // TODO: Replace primeFactors with this.
+    let primeFactorisation n =
+        primes
+        |> Seq.takeWhile ((>) ((float >> sqrt >> int) n))
+        |> Seq.map (fun x -> (x, numberOfTimesDivisible n x 0))
+
     // Takes a while. Try to optimise later. For example, could try to convert to string only once we have a value in a variable.
     // Though it would be surprising if it didn't do this already.
+    // let problem5 n =
+    //     Seq.initInfinite((+) 1)
+    //     |> Seq.where (fun x ->
+    //         {1..n}
+    //         |> Seq.forall(fun y -> x % y = 0)
+    //     )
+    //     |> Seq.head
+    //     |> string
+
     let problem5 n =
-        Seq.initInfinite((+) 1)
-        |> Seq.where (fun x ->
-            {1..n}
-            |> Seq.forall(fun y -> x % y = 0)
+        let factorisations =
+            [|1..n|]
+            |> Array.map primeFactorisation
+        {1..((float >> sqrt >> int) n)}
+        |> Seq.map (
+            fun x ->
+                (
+                    x,
+                    factorisations
+                    |> Array.map (fun y -> y |> Seq.find (fun z -> fst z = x) |> snd)
+                    |> Array.max
+                )
+            >> (fun t -> pown (fst t) (snd t))
         )
-        |> Seq.head
+        |> Seq.reduce ( * )
         |> string
 
     let problem6 n =
@@ -68,19 +118,11 @@ module EulerSolving =
         abs(sumOfSquares - squareOfSum)
         |> string
 
-    let isPrime x =
-        x > 1 && (
-            {2..(float >> sqrt >> int) x}
-            |> Seq.forall (fun y -> x % y <> 0)         // Consider (fun y -> x % y <> LanguagePrimitives.GenericZero)
-        )
-
     let isPrime64 l =
         l > 1L && (
             {2L..(float >> sqrt >> int64) l}
             |> Seq.forall (fun y -> l % y <> 0L)        // Consider (fun y -> x % y <> LanguagePrimitives.GenericZero)
         )
-
-    let primes = Seq.initInfinite((+) 1) |> Seq.where isPrime
 
     let problem7 n =
         let naturalNumbers = Seq.initInfinite((+) 1)
@@ -433,46 +475,46 @@ module EulerSolving =
     //     |> Seq.sum
     //     |> string
 
-    let fractionsAreEqual a b =
-        (fst a) * (snd b) = (snd a) * (fst b)
+    // let fractionsAreEqual a b =
+    //     (fst a) * (snd b) = (snd a) * (fst b)
 
-    let multiplyFractions a b =
-        ((fst a) * (fst b), (snd a) * (snd b))
+    // let multiplyFractions a b =
+    //     ((fst a) * (fst b), (snd a) * (snd b))
 
-    let lowestCommonTerms fraction =
-        let divisor =
-            {(snd fraction).. -1 .. 1}
-            |> Seq.find(fun x -> ((fst fraction) % x = 0) && ((snd fraction) % x = 0))
-        ((fst fraction) / divisor, (snd fraction) / divisor)
+    // let lowestCommonTerms fraction =
+    //     let divisor =
+    //         {(snd fraction).. -1 .. 1}
+    //         |> Seq.find(fun x -> ((fst fraction) % x = 0) && ((snd fraction) % x = 0))
+    //     ((fst fraction) / divisor, (snd fraction) / divisor)
 
-    let isCuriousFraction x =
-        let numFstDigit = (fst x) / 10
-        let numSndDigit = (fst x) % 10
-        let denFstDigit = (snd x) / 10
-        let denSndDigit = (snd x) % 10
+    // let isCuriousFraction t =
+    //     let numFstDigit = (fst t) / 10
+    //     let numSndDigit = (fst t) % 10
+    //     let denFstDigit = (snd t) / 10
+    //     let denSndDigit = (snd t) % 10
 
-        if (numSndDigit = 0 && denSndDigit = 0)
-        then false
-        else
-            (numSndDigit = denSndDigit && fractionsAreEqual ((fst x), (snd x)) (numFstDigit, denFstDigit))
-            || (numSndDigit = denFstDigit && fractionsAreEqual ((fst x), (snd x)) (numFstDigit, denSndDigit))
-            || (numFstDigit = denSndDigit && fractionsAreEqual ((fst x), (snd x)) (numSndDigit, denFstDigit))
-            || (numFstDigit = denFstDigit && fractionsAreEqual ((fst x), (snd x)) (numSndDigit, denSndDigit))
+    //     if (numSndDigit = 0 && denSndDigit = 0)
+    //     then false
+    //     else
+    //         (numSndDigit = denSndDigit && fractionsAreEqual ((fst t), (snd t)) (numFstDigit, denFstDigit))
+    //         || (numSndDigit = denFstDigit && fractionsAreEqual ((fst t), (snd t)) (numFstDigit, denSndDigit))
+    //         || (numFstDigit = denSndDigit && fractionsAreEqual ((fst t), (snd t)) (numSndDigit, denFstDigit))
+    //         || (numFstDigit = denFstDigit && fractionsAreEqual ((fst t), (snd t)) (numSndDigit, denSndDigit))
 
-    let twoDigitFractions =
-        seq {
-            for num in 10..99 do
-            for den in (num+1)..99 -> (num, den)
-        }
+    // let twoDigitFractions =
+    //     seq {
+    //         for num in 10..99 do
+    //         for den in (num+1)..99 -> (num, den)
+    //     }
 
-    let curiousFractions = twoDigitFractions |> Seq.where isCuriousFraction
+    // let curiousFractions = twoDigitFractions |> Seq.where isCuriousFraction
 
-    let problem33 =
-        curiousFractions
-        |> Seq.reduce multiplyFractions
-        |> lowestCommonTerms
-        |> snd
-        |> string
+    // let problem33 =
+    //     curiousFractions
+    //     |> Seq.reduce multiplyFractions
+    //     |> lowestCommonTerms
+    //     |> snd
+    //     |> string
 
     let factorial n =
         if n = 0 then 1
@@ -653,10 +695,10 @@ module EulerSolving =
         let pentagonalsBelowN = pentagonals |> Seq.takeWhile ((>) n) |> Array.ofSeq
         let isPentagonalBelowN = binarySearch pentagonalsBelowN
         seq {
-            for D in pentagonalsBelowN do
-                for Pj in pentagonalsBelowN do
-                    if (isPentagonalBelowN (D + Pj)) && (isPentagonalBelowN (Pj + D + Pj)) then
-                       yield D
+            for diff in pentagonalsBelowN do
+                for pj in pentagonalsBelowN do
+                    if (isPentagonalBelowN (diff + pj)) && (isPentagonalBelowN (pj*2L + diff)) then
+                       yield diff
         }
         |> Seq.head
         |> string
@@ -690,19 +732,6 @@ module EulerSolving =
         |> Seq.where(fun x -> x % 2 = 1 && not (isPrime x))
         |> Seq.find (canBeWrittenAsSumOfPrimeAndTwiceASquare >> not)
         |> string
-
-    let primeFactors n =
-        (
-            Seq.unfold (fun p ->
-            if p = 1
-            then None
-            else
-                primes
-                |> Seq.find(fun x -> p % x = 0) 
-                |> (fun x -> Some(x, p / x))
-            ) n
-        )
-        |> Seq.distinct
 
     let primeFactorsForRange n p =
         {0..(n-1)}

@@ -25,9 +25,8 @@ module EulerValidation =
         validate 3 (EulerSolving.problem3 600851475143L) "6857";
         validate 4 (EulerSolving.problem4 2) "9009";
         validate 4 (EulerSolving.problem4 3) "906609";
-        // TODO: Calculate 5 using prime factors.
-        // validate 5 problem5 "10" "2520";
-        // validate 5 problem5 "20" "232792560";
+        validate 5 (EulerSolving.problem5 10) "2520";
+        validate 5 (EulerSolving.problem5 20) "232792560";
         validate 6 (EulerSolving.problem6 10) "2640";
         validate 6 (EulerSolving.problem6 100) "25164150";
         validate 7 (EulerSolving.problem7 6) "13";
@@ -62,57 +61,63 @@ module EulerValidation =
         // validate 23 problem23 "28123" "0";
         // TODO: Optimise
         // validate 24 problem24 "1000000" "2783915460";
-        validate 25 (EulerSolving.problem25 1000) "4782";
-        validate 26 (EulerSolving.problem26 10) "7";
-        validate 26 (EulerSolving.problem26 1000) "983";
-        validate 27 (EulerSolving.problem27 1000) "-59231";
-        validate 28 (EulerSolving.problem28 2) "101";
-        validate 28 (EulerSolving.problem28 500) "669171001";
-        validate 29 (EulerSolving.problem29 5) "15";
-        validate 29 (EulerSolving.problem29 100) "9183";
-        validate 30 (EulerSolving.problem30 4) "19316";
-        validate 30 (EulerSolving.problem30 5) "443839";
-        validate 31 (EulerSolving.problem31 200) "73682";
-        // TODO: Optimise 32.
-        // validate 32 problem32 "45228";
-        validate 33 EulerSolving.problem33 "100";
-        validate 34 (EulerSolving.problem34 1000000) "40730";
-        validate 35 (EulerSolving.problem35 100) "13";
-        validate 35 (EulerSolving.problem35 1000000) "55";
-        validate 36 (EulerSolving.problem36 1000000) "872187";
-        validate 37 EulerSolving.problem37 "748317";
-        validate 38 EulerSolving.problem38 "932718654";
-        validate 39 (EulerSolving.problem39 1000) "840";
-        validate 40 (EulerSolving.problem40 6) "210";
-        validate 41 EulerSolving.problem41 "7652413";
-        validate 42 (EulerSolving.problem42 (File.ReadAllText "data/problem42.txt") 200) "162";
+        // validate 25 (EulerSolving.problem25 1000) "4782";
+        // validate 26 (EulerSolving.problem26 10) "7";
+        // validate 26 (EulerSolving.problem26 1000) "983";
+        // validate 27 (EulerSolving.problem27 1000) "-59231";
+        // validate 28 (EulerSolving.problem28 2) "101";
+        // validate 28 (EulerSolving.problem28 500) "669171001";
+        // validate 29 (EulerSolving.problem29 5) "15";
+        // validate 29 (EulerSolving.problem29 100) "9183";
+        // validate 30 (EulerSolving.problem30 4) "19316";
+        // validate 30 (EulerSolving.problem30 5) "443839";
+        // validate 31 (EulerSolving.problem31 200) "73682";
+        // // TODO: Optimise 32.
+        // // validate 32 problem32 "45228";
+        // validate 33 EulerSolving.problem33 "100";
+        // validate 34 (EulerSolving.problem34 1000000) "40730";
+        // validate 35 (EulerSolving.problem35 100) "13";
+        // validate 35 (EulerSolving.problem35 1000000) "55";
+        // validate 36 (EulerSolving.problem36 1000000) "872187";
+        // validate 37 EulerSolving.problem37 "748317";
+        // validate 38 EulerSolving.problem38 "932718654";
+        // validate 39 (EulerSolving.problem39 1000) "840";
+        // validate 40 (EulerSolving.problem40 6) "210";
+        // validate 41 EulerSolving.problem41 "7652413";
+        // validate 42 (EulerSolving.problem42 (File.ReadAllText "data/problem42.txt") 200) "162";
 
-        // Skip 43 because it's evaluated ahead of time
-        //validate 43 problem43 "16695334890";
+        // // Skip 43 because it's evaluated ahead of time
+        // //validate 43 problem43 "16695334890";
 
-        validate 44 (EulerSolving.problem44 100000000L) "5482660";
-        validate 45 (EulerSolving.problem45 40755L 100000000000L) "1533776805";
-        validate 46 EulerSolving.problem46 "5777";
+        // validate 44 (EulerSolving.problem44 100000000L) "5482660";
+        // validate 45 (EulerSolving.problem45 40755L 100000000000L) "1533776805";
+        // validate 46 EulerSolving.problem46 "5777";
 
-        validate 47 (EulerSolving.problem47 2) "14";
-        validate 47 (EulerSolving.problem47 3) "644";
-        // Skip 47 with input 4 because it takes a very long time.
-        //validate 47 (EulerSolving.problem47 4) "134043"";
+        // validate 47 (EulerSolving.problem47 2) "14";
+        // validate 47 (EulerSolving.problem47 3) "644";
+        // // Skip 47 with input 4 because it takes a very long time.
+        // //validate 47 (EulerSolving.problem47 4) "134043"";
 
 
-        validate 48 (EulerSolving.problem48 10) "0405071317";
-        validate 48 (EulerSolving.problem48 1000) "9110846700";
+        // validate 48 (EulerSolving.problem48 10) "0405071317";
+        // validate 48 (EulerSolving.problem48 1000) "9110846700";
 
-        //do validate 49 (EulerSolving.problem49 "148748178147") "296962999629";
+        // //do validate 49 (EulerSolving.problem49 "148748178147") "296962999629";
 
-        validate 50 (EulerSolving.problem50 1000000) "997651";
+        // validate 50 (EulerSolving.problem50 1000000) "997651";
     
     |]
 
 module Program =
     [<EntryPoint>]
-    let main args =    
+    let main args =
         printfn "args: %A" args
         printfn "env.cmdline: %A" <| Environment.GetCommandLineArgs()   
-        printfn "%A" (BenchmarkRunner.Run<EulerSolutionBenchmarks>()) 
-        0
+
+        if args |> Array.length > 1
+        then
+            printfn "%A" (BenchmarkRunner.Run<EulerSolutionBenchmarks>()) 
+            0
+        else
+            printfn "%A" (EulerValidation.ValidateOutput())
+            0
