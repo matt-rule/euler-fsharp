@@ -81,17 +81,6 @@ module EulerSolving =
         |> Seq.map (fun x -> (x, numberOfTimesDivisible n x 0))
         |> Seq.where (snd >> ((<>) 0))
 
-    // Takes a while. Try to optimise later. For example, could try to convert to string only once we have a value in a variable.
-    // Though it would be surprising if it didn't do this already.
-    // let problem5 n =
-    //     Seq.initInfinite((+) 1)
-    //     |> Seq.where (fun x ->
-    //         {1..n}
-    //         |> Seq.forall(fun y -> x % y = 0)
-    //     )
-    //     |> Seq.head
-    //     |> string
-
     let problem5 n =
         let factorisations =
             [|1..n|]
