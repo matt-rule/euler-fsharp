@@ -77,8 +77,9 @@ module EulerSolving =
     // TODO: Replace primeFactors with this.
     let primeFactorisation n =
         primes
-        |> Seq.takeWhile ((>) ((float >> sqrt >> int) n))
+        |> Seq.takeWhile ((>=) n)
         |> Seq.map (fun x -> (x, numberOfTimesDivisible n x 0))
+        |> Seq.where (snd >> ((<>) 0))
 
     // Takes a while. Try to optimise later. For example, could try to convert to string only once we have a value in a variable.
     // Though it would be surprising if it didn't do this already.
@@ -94,18 +95,18 @@ module EulerSolving =
     let problem5 n =
         let factorisations =
             [|1..n|]
-            |> Array.map primeFactorisation
-        {1..((float >> sqrt >> int) n)}
-        |> Seq.map (
-            fun x ->
-                (
-                    x,
-                    factorisations
-                    |> Array.map (fun y -> y |> Seq.find (fun z -> fst z = x) |> snd)
-                    |> Array.max
-                )
-            >> (fun t -> pown (fst t) (snd t))
-        )
+            |> Seq.map primeFactorisation
+            |> Seq.collect id
+        let largestPowerForEachPrime =
+            primes
+            |> Seq.takeWhile ((>=) n)
+            |> Seq.map (fun x ->
+                factorisations
+                |> Seq.where (fst >> ((=) x))
+                |> Seq.maxBy snd
+            )
+        largestPowerForEachPrime
+        |> Seq.map (fun (x, y) -> pown x y)
         |> Seq.reduce ( * )
         |> string
 
