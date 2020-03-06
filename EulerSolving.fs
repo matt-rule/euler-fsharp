@@ -205,17 +205,15 @@ module EulerSolving =
         |> stringConcatFromIntSeq
         |> string
         
-    // let problem14 n =
-    //     let collatz n = if n % 2L = 0L then (n / 2L) else (n*3L + 1L)
-    //     let rec collatzSequence n = seq {
-    //         yield n
-    //         if n <> 1L then yield! (collatzSequence (collatz n))
-    //     }
-    //     {1L..n-1L}
-    //     |> Seq.maxBy (collatzSequence >> Seq.length)
-    //     |> string
-        
-    // printfn "%s" (problem14 1000000L)
+    let problem14 (n : int64) =
+        let collatz n = if n % 2L = 0L then (n / 2L) else (n*3L + 1L)
+        let rec collatzSequenceLength count n =
+            if n = 1L
+            then count + 1
+            else collatzSequenceLength (count + 1) (collatz n)
+        {1L..n-1L}
+        |> Seq.maxBy (collatzSequenceLength 0)
+        |> string
 
     let problem15 n =
         let rec countLattice state step maxStep =
