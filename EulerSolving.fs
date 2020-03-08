@@ -359,8 +359,6 @@ module EulerSolving =
         |> Seq.map string
         |> String.concat ""
 
-    printfn "%s" (problem24 1000000)
-
     let problem25 n =
         let fibonacci = Seq.unfold(fun (x, y) -> Some(x + y, (y, x + y))) (0I, 1I)
         let indexedFibonacci = fibonacci |> Seq.zip (Seq.initInfinite((+) 1) |> Seq.skip 1)
@@ -396,10 +394,6 @@ module EulerSolving =
     // You can reduce the line count by declaring a function further up,
     // then avoiding brackets around it when using it
     let problem27 cap =
-        let isPrime n =
-            (n > 0)
-            && { 2..(n |> (float >> sqrt >> int)) }
-            |> Seq.forall (fun x -> n % x <> 0)
         let consecutivePrimes a b =
             Seq.initInfinite((+) 1)
             |> Seq.find(fun n -> (n*n + a*n + b) |> isPrime |> not)
@@ -461,73 +455,73 @@ module EulerSolving =
         |> Seq.length
         |> string
 
-    // let problem32() =
-    //     let rec getPermutationsOneToNine (s : string) p =
-    //         seq {
-    //             for i in {1..9} |> Seq.where (string >> s.Contains >> not) do 
-    //             match p with
-    //             | 1 -> yield (s + (string i))
-    //             | _ -> yield! (getPermutationsOneToNine (s + (string i)) (p - 1))
-    //         }
-    //     let skipTakeDigits x y = Seq.skip x >> Seq.take y >> stringConcatFromCharSeq >> int
-    //     let allPermutations = (getPermutationsOneToNine "" 9)
-    //     allPermutations
-    //     |> Seq.collect(fun x ->
-    //         seq {
-    //             for productDigits in {3..7} do
-    //             for multiplierDigits in {1..(8-productDigits)} do
-    //             let multiplicandDigits = 9 - productDigits - multiplierDigits
-    //             let multiplicand = x |> skipTakeDigits 0 multiplicandDigits
-    //             let multiplier = x |> skipTakeDigits multiplicandDigits multiplierDigits
-    //             let product = x |> skipTakeDigits (multiplicandDigits + multiplierDigits) productDigits
-    //             if (multiplicand * multiplier = product)
-    //             then yield product
-    //         }
-    //     )
-    //     |> Seq.distinct
-    //     |> Seq.sum
-    //     |> string
+    let problem32() =
+        let rec getPermutationsOneToNine (s : string) p =
+            seq {
+                for i in {1..9} |> Seq.where (string >> s.Contains >> not) do 
+                match p with
+                | 1 -> yield (s + (string i))
+                | _ -> yield! (getPermutationsOneToNine (s + (string i)) (p - 1))
+            }
+        let skipTakeDigits x y = Seq.skip x >> Seq.take y >> stringConcatFromCharSeq >> int
+        let allPermutations = (getPermutationsOneToNine "" 9)
+        allPermutations
+        |> Seq.collect(fun x ->
+            seq {
+                for productDigits in {3..7} do
+                for multiplierDigits in {1..(8-productDigits)} do
+                let multiplicandDigits = 9 - productDigits - multiplierDigits
+                let multiplicand = x |> skipTakeDigits 0 multiplicandDigits
+                let multiplier = x |> skipTakeDigits multiplicandDigits multiplierDigits
+                let product = x |> skipTakeDigits (multiplicandDigits + multiplierDigits) productDigits
+                if (multiplicand * multiplier = product)
+                then yield product
+            }
+        )
+        |> Seq.distinct
+        |> Seq.sum
+        |> string
 
-    // let fractionsAreEqual a b =
-    //     (fst a) * (snd b) = (snd a) * (fst b)
+    let fractionsAreEqual a b =
+        (fst a) * (snd b) = (snd a) * (fst b)
 
-    // let multiplyFractions a b =
-    //     ((fst a) * (fst b), (snd a) * (snd b))
+    let multiplyFractions a b =
+        ((fst a) * (fst b), (snd a) * (snd b))
 
-    // let lowestCommonTerms fraction =
-    //     let divisor =
-    //         {(snd fraction).. -1 .. 1}
-    //         |> Seq.find(fun x -> ((fst fraction) % x = 0) && ((snd fraction) % x = 0))
-    //     ((fst fraction) / divisor, (snd fraction) / divisor)
+    let lowestCommonTerms fraction =
+        let divisor =
+            {(snd fraction).. -1 .. 1}
+            |> Seq.find(fun x -> ((fst fraction) % x = 0) && ((snd fraction) % x = 0))
+        ((fst fraction) / divisor, (snd fraction) / divisor)
 
-    // let isCuriousFraction t =
-    //     let numFstDigit = (fst t) / 10
-    //     let numSndDigit = (fst t) % 10
-    //     let denFstDigit = (snd t) / 10
-    //     let denSndDigit = (snd t) % 10
+    let isCuriousFraction t =
+        let numFstDigit = (fst t) / 10
+        let numSndDigit = (fst t) % 10
+        let denFstDigit = (snd t) / 10
+        let denSndDigit = (snd t) % 10
 
-    //     if (numSndDigit = 0 && denSndDigit = 0)
-    //     then false
-    //     else
-    //         (numSndDigit = denSndDigit && fractionsAreEqual ((fst t), (snd t)) (numFstDigit, denFstDigit))
-    //         || (numSndDigit = denFstDigit && fractionsAreEqual ((fst t), (snd t)) (numFstDigit, denSndDigit))
-    //         || (numFstDigit = denSndDigit && fractionsAreEqual ((fst t), (snd t)) (numSndDigit, denFstDigit))
-    //         || (numFstDigit = denFstDigit && fractionsAreEqual ((fst t), (snd t)) (numSndDigit, denSndDigit))
+        if (numSndDigit = 0 && denSndDigit = 0)
+        then false
+        else
+            (numSndDigit = denSndDigit && fractionsAreEqual ((fst t), (snd t)) (numFstDigit, denFstDigit))
+            || (numSndDigit = denFstDigit && fractionsAreEqual ((fst t), (snd t)) (numFstDigit, denSndDigit))
+            || (numFstDigit = denSndDigit && fractionsAreEqual ((fst t), (snd t)) (numSndDigit, denFstDigit))
+            || (numFstDigit = denFstDigit && fractionsAreEqual ((fst t), (snd t)) (numSndDigit, denSndDigit))
 
-    // let twoDigitFractions =
-    //     seq {
-    //         for num in 10..99 do
-    //         for den in (num+1)..99 -> (num, den)
-    //     }
+    let twoDigitFractions =
+        seq {
+            for num in 10..99 do
+            for den in (num+1)..99 -> (num, den)
+        }
 
-    // let curiousFractions = twoDigitFractions |> Seq.where isCuriousFraction
+    let curiousFractions = twoDigitFractions |> Seq.where isCuriousFraction
 
-    // let problem33() =
-    //     curiousFractions
-    //     |> Seq.reduce multiplyFractions
-    //     |> lowestCommonTerms
-    //     |> snd
-    //     |> string
+    let problem33() =
+        curiousFractions
+        |> Seq.reduce multiplyFractions
+        |> lowestCommonTerms
+        |> snd
+        |> string
 
     let factorial n =
         if n = 0 then 1
@@ -664,21 +658,22 @@ module EulerSolving =
         |> Seq.length
         |> string
 
-    // let problem43() =
-    //     getPermutationsWithPDigits "" 10
-    //     |> Seq.where(fun x ->
-    //         {0..6}
-    //         |> Seq.forall(fun y ->
-    //             x
-    //             |> Seq.skip (y + 1)
-    //             |> Seq.take 3
-    //             |> stringConcatFromCharSeq
-    //             |> int
-    //             |> (fun z -> z % (primes |> Seq.item y) = 0)
-    //         )
-    //     )
-    //     |> Seq.sumBy int64
-    //     |> string
+    let problem43() =
+        customUnfold (getNextPermutation 10) [| 0..9 |]
+        |> Seq.map (Seq.map string >> String.concat "")
+        |> Seq.where(fun x ->
+            {0..6}
+            |> Seq.forall(fun y ->
+                x
+                |> Seq.skip (y + 1)
+                |> Seq.take 3
+                |> stringConcatFromCharSeq
+                |> int
+                |> (fun z -> z % (primes |> Seq.item y) = 0)
+            )
+        )
+        |> Seq.sumBy int64
+        |> string
 
     let pentagonal n = (n*(3L*n-1L))/2L
     let pentagonals = customUnfold ((+) 1L) 1L |> Seq.map pentagonal
@@ -737,7 +732,7 @@ module EulerSolving =
         |> Seq.where isPrime
         |> Seq.exists(fun x -> (n-x) % 2 = 0 && ((n-x)/2) |> isSquare)
 
-    let problem46 =
+    let problem46() =
         Seq.initInfinite((+) 1)
         |> Seq.skip 1
         |> Seq.where(fun x -> x % 2 = 1 && not (isPrime x))
