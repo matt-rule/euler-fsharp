@@ -75,6 +75,7 @@ module EulerSolving =
         else numberOfTimesDivisible (x/y) y (n+1)
 
     // TODO: Replace primeFactors with this.
+    // Written at a later date: Is this function faster?
     let primeFactorisation n =
         primes
         |> Seq.takeWhile ((>=) n)
@@ -739,17 +740,13 @@ module EulerSolving =
         |> Seq.find (canBeWrittenAsSumOfPrimeAndTwiceASquare >> not)
         |> string
 
-    let primeFactorsForRange n p =
-        {0..(n-1)}
-        |> Seq.map (fun x -> primeFactors (p+x))
-
-    let consecutiveNumbersHaveNDistinctPrimeFactors n p =
-        primeFactorsForRange n p
-        |> Seq.forall(fun x -> x |> Seq.length = n)
-
+    // 646 secs
     let problem47 n =
         Seq.initInfinite((+) 1)
-        |> Seq.find (consecutiveNumbersHaveNDistinctPrimeFactors n)
+        |> Seq.map (fun x -> (x, (primeFactors x |> Seq.length)))
+        |> Seq.windowed n
+        |> Seq.find (Array.forall(snd >> ((=) n)))
+        |> (fun x -> x.[0] |> fst)
         |> string
 
     let problem48 n =
