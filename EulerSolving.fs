@@ -292,9 +292,10 @@ module EulerSolving =
         |> string
 
     let sumOfProperDivisors n =
-        {1..n-1}
+        {2..(intSqrt n)}
         |> Seq.where(fun y -> n % y = 0)
-        |> Seq.sum
+        |> Seq.sumBy(fun x -> if (x = n / x) then x else x + n / x)
+        |> ((+) 1)
 
     let problem21 n =
         {1..n-1}
@@ -318,9 +319,13 @@ module EulerSolving =
             {1..n}
             |> Seq.where (fun x -> sumOfProperDivisors x > x)
             |> Seq.toArray
-        let canBeWrittenAsTheSumOfTwoAbundantNumbers p = abundantNumbers |> Array.exists(fun x -> Array.contains (p - x) abundantNumbers)
+        let mutable sumsOfAbundantPairs = Array.replicate n false
+        for index1 in {0..abundantNumbers.Length-1} do
+            for index2 in {index1..abundantNumbers.Length-1} do
+                if ((abundantNumbers.[index1] + abundantNumbers.[index2]) <= n) then
+                    sumsOfAbundantPairs.[abundantNumbers.[index1] + abundantNumbers.[index2] - 1] <- true
         {1..n}
-        |> Seq.where(canBeWrittenAsTheSumOfTwoAbundantNumbers >> not)
+        |> Seq.where(fun x -> not sumsOfAbundantPairs.[x-1])
         |> Seq.sum
         |> string
 
