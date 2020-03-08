@@ -270,7 +270,7 @@ module EulerSolving =
 
     let problem18 = maxTotalForTriangle
 
-    let problem19 =
+    let problem19() =
         let isLeapYear n = (n % 4 = 0) && (n % 100 <> 0 || n % 400 = 0)
         let daysInMonth y m =
             let daysInFeb = if isLeapYear y then 29 else 28
@@ -329,17 +329,37 @@ module EulerSolving =
         |> Seq.sum
         |> string
 
-    let rec getPermutationsWithPDigits (s : string) p =
-        seq {
-            for i in {0..9} |> Seq.where (string >> s.Contains >> not) do 
-            match p with
-            | 1 -> yield (s + (string i))
-            | _ -> yield! (getPermutationsWithPDigits (s + (string i)) (p - 1))
-        }
+    let customUnfold f state =
+        Seq.unfold (fun x -> Some(x, f x)) state
+
+    let flip f x y = f y x
+
+    let getNextPermutation n (arr : int array) =
+        let i1 =
+            {n-2 .. -1 .. 0}
+            |> Seq.find (fun i -> arr.[i] < arr.[i+1])
+        let v2 =
+            arr
+            |> Array.skip (i1 + 1)
+            |> Array.where ((<) arr.[i1])
+            |> Array.min
+        let i2 = arr |> Array.findIndex ((=) v2)
+        Array.concat [|
+            (arr |> Array.take i1);
+            [| arr.[i2] |];
+            arr
+            |> Array.skip i1
+            |> Array.where ((<>) arr.[i2])
+            |> Array.sort
+        |]
 
     let problem24 n =
-        getPermutationsWithPDigits "" 10
-        |> Seq.item n
+        customUnfold (getNextPermutation 10) [| 0..9 |]
+        |> Seq.item (n-1)
+        |> Seq.map string
+        |> String.concat ""
+
+    printfn "%s" (problem24 1000000)
 
     let problem25 n =
         let fibonacci = Seq.unfold(fun (x, y) -> Some(x + y, (y, x + y))) (0I, 1I)
@@ -441,7 +461,7 @@ module EulerSolving =
         |> Seq.length
         |> string
 
-    // let problem32 =
+    // let problem32() =
     //     let rec getPermutationsOneToNine (s : string) p =
     //         seq {
     //             for i in {1..9} |> Seq.where (string >> s.Contains >> not) do 
@@ -502,7 +522,7 @@ module EulerSolving =
 
     // let curiousFractions = twoDigitFractions |> Seq.where isCuriousFraction
 
-    // let problem33 =
+    // let problem33() =
     //     curiousFractions
     //     |> Seq.reduce multiplyFractions
     //     |> lowestCommonTerms
@@ -561,7 +581,7 @@ module EulerSolving =
             && nStr |> Seq.skip x |> stringConcatFromCharSeq |> int |> isPrime
         )
 
-    let problem37 =
+    let problem37() =
         {11..1000000}
         |> Seq.where isPrime
         |> Seq.where truncatableInBothDirections
@@ -570,7 +590,7 @@ module EulerSolving =
         |> Seq.sum
         |> string
 
-    let problem38 =
+    let problem38() =
         let panDigitalOneToNine s = {'1'..'9'} |> Seq.forall (fun x -> s |> Seq.contains x)
         let numberStrings =
             {1..99999}
@@ -620,7 +640,7 @@ module EulerSolving =
             | _ -> yield! (getPermutationsWithPDigitsBackwards max (s + (string i)) (p - 1))
         }
 
-    let problem41 =
+    let problem41() =
         let isPandigital n =
             let nStr = string n
             {1..(String.length nStr)}
@@ -644,7 +664,7 @@ module EulerSolving =
         |> Seq.length
         |> string
 
-    // let problem43 =
+    // let problem43() =
     //     getPermutationsWithPDigits "" 10
     //     |> Seq.where(fun x ->
     //         {0..6}
@@ -661,8 +681,6 @@ module EulerSolving =
     //     |> string
 
     let pentagonal n = (n*(3L*n-1L))/2L
-    let customUnfold f state =
-        Seq.unfold (fun x -> Some(x, f x)) state
     let pentagonals = customUnfold ((+) 1L) 1L |> Seq.map pentagonal
 
     let rec binarySearchStep (arr : int64[]) (x : int64) (indexLowerBound : int) (indexUpperBound : int) =
