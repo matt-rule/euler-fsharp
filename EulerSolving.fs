@@ -3,6 +3,8 @@ namespace EulerApp
 open System
 
 module EulerSolving =
+    let flip f x y = f y x
+
     let problem1 n =
         {1..n-1}
         |> Seq.where(fun x -> x % 3 = 0 || x % 5 = 0)
@@ -12,7 +14,7 @@ module EulerSolving =
     let problem2 n =
         Seq.unfold(fun (x, y) -> Some(x + y, (y, x + y))) (0, 1)
         |> Seq.takeWhile ((>=) n)
-        |> Seq.where(fun x -> x % 2 = 0)
+        |> Seq.where(flip (%) 2 >> ((=) 0))
         |> Seq.sum
         |> string
 
@@ -21,7 +23,7 @@ module EulerSolving =
         n
         |> Seq.unfold(fun x ->
             if x = 1L then None else
-                let y = {2L..x} |> Seq.find(fun y -> x % y = 0L)
+                let y = {2L..x} |> Seq.find((%) x >> (=) 0L)
                 Some(y, x / y)
         )
         |> Seq.max
@@ -41,7 +43,7 @@ module EulerSolving =
         {1..max}
         |> Seq.collect(fun x ->
             {x+1..max}
-            |> Seq.map (fun y -> x*y |> string)
+            |> Seq.map (( * ) x >> string)
             |> Seq.where (fun y -> y = (y |> seq |> Seq.rev |> stringConcatFromCharSeq))
             |> Seq.map int
         )
@@ -51,7 +53,7 @@ module EulerSolving =
     let isPrime x =
         x > 1 && (
             {2..(float >> sqrt >> int) x}
-            |> Seq.forall (fun y -> x % y <> 0)         // Consider (fun y -> x % y <> LanguagePrimitives.GenericZero)
+            |> Seq.forall ((%) x >> (<>) 0)         // Consider (fun y -> x % y <> LanguagePrimitives.GenericZero)
         )
 
     let primes = Seq.initInfinite((+) 1) |> Seq.where isPrime
@@ -63,7 +65,7 @@ module EulerSolving =
             then None
             else
                 primes
-                |> Seq.find(fun x -> p % x = 0) 
+                |> Seq.find((%) p >> (=) 0)
                 |> (fun x -> Some(x, p / x))
             ) n
         )
@@ -189,12 +191,12 @@ module EulerSolving =
             // Get all divisors for x up to sqrt(x)
             // This might count the square root twice
             {1..(intSqrt x)}
-            |> Seq.where(fun y -> x % y = 0)
+            |> Seq.where((%) x >> (=) 0)
             |> Seq.length > n / 2
         )
         |> string
 
-    let bigIntDigits n = n |> string |> Seq.map (string >> int)
+    let bigIntDigits = string >> Seq.map (string >> int)
 
     let problem13 fileLines =
         fileLines
@@ -331,8 +333,6 @@ module EulerSolving =
 
     let customUnfold f state =
         Seq.unfold (fun x -> Some(x, f x)) state
-
-    let flip f x y = f y x
 
     let getNextPermutation n (arr : int array) =
         let i1 =
@@ -639,7 +639,7 @@ module EulerSolving =
             let nStr = string n
             {1..(String.length nStr)}
             |> Seq.map (string >> Seq.head)
-            |> Seq.forall(fun x -> nStr |> Seq.contains x)
+            |> Seq.forall(flip Seq.contains nStr)
         {9 .. -1 .. 1}
         |> Seq.collect (fun x -> getPermutationsWithPDigitsBackwards x "" x)
         |> Seq.map int
@@ -654,7 +654,7 @@ module EulerSolving =
             |> Array.ofSeq
         fileText.Replace("\"", "").Split(',')
         |> Seq.map wordScore
-        |> Seq.where(fun x -> firstNTriangularNumbers |> Seq.contains x)
+        |> Seq.where(flip Seq.contains firstNTriangularNumbers)
         |> Seq.length
         |> string
 
@@ -741,7 +741,7 @@ module EulerSolving =
 
     let primeFactorsForRange n p =
         {0..(n-1)}
-        |> Seq.map (fun x -> primeFactors (p+x))
+        |> Seq.map (((+) p) >> primeFactors)
 
     let consecutiveNumbersHaveNDistinctPrimeFactors n p =
         primeFactorsForRange n p
