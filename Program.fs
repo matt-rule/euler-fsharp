@@ -82,8 +82,7 @@ module EulerValidation =
             validate 41 (EulerSolving.problem41()) "7652413";
             validate 42 (EulerSolving.problem42 (File.ReadAllText "data/problem42.txt") 200) "162";
 
-            // Skip 43 because it's evaluated ahead of time
-            //validate 43 (EulerSolving.problem43()) "16695334890";
+            validate 43 (EulerSolving.problem43()) "16695334890";
 
             validate 44 (EulerSolving.problem44 100000000L) "5482660";
             validate 45 (EulerSolving.problem45 40755L 100000000000L) "1533776805";

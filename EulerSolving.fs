@@ -334,7 +334,7 @@ module EulerSolving =
     let customUnfold f state =
         Seq.unfold (fun x -> Some(x, f x)) state
 
-    let getNextPermutation n (arr : int array) =
+    let getNextPermutation n (arr : 'a array) =
         let i1 =
             {n-2 .. -1 .. 0}
             |> Seq.find (fun i -> arr.[i] < arr.[i+1])
@@ -659,8 +659,19 @@ module EulerSolving =
         |> string
 
     let problem43() =
-        customUnfold (getNextPermutation 10) [| 0..9 |]
+        let x =
+            [| 0L..9L |]
+            |> Seq.unfold (fun state ->
+                let ddgfd = (state |> (Seq.map string >> String.concat ""))
+                if (state |> (Seq.map string >> String.concat "")) = "9876543210"
+                then None
+                else
+                    let nextState = getNextPermutation 10 state
+                    Some (nextState, nextState)
+            )
+        x
         |> Seq.map (Seq.map string >> String.concat "")
+        |> Seq.takeWhile (int64 >> ((>) 9876543210L))
         |> Seq.where(fun x ->
             {0..6}
             |> Seq.forall(fun y ->
@@ -745,7 +756,7 @@ module EulerSolving =
 
     let consecutiveNumbersHaveNDistinctPrimeFactors n p =
         primeFactorsForRange n p
-        |> Seq.forall(fun x -> x |> Seq.length = n)
+        |> Seq.forall(Seq.length >> ((=) n))
 
     let problem47 n =
         Seq.initInfinite((+) 1)
