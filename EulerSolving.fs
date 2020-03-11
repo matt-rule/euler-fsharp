@@ -659,25 +659,29 @@ module EulerSolving =
         |> string
 
     let problem43() =
-        [| 0L..9L |]
-        |> Seq.unfold (fun state ->
-            if (state |> (Seq.map string >> String.concat "")) = "9876543210"
-            then None
-            else
-                let nextState = getNextPermutation 10 state
-                Some (nextState, nextState)
-        )
-        |> Seq.map (Seq.map string >> String.concat "")
-        |> Seq.where(
-            flip (fun x ->
-                Seq.skip (x + 1)
-                >> Seq.take 3
-                >> stringConcatFromCharSeq
-                >> int
-                >> flip (%) (Seq.item x primes)
-                >> ((=) 0)
+        let x =
+            [| 0L..9L |]
+            |> Seq.unfold (fun state ->
+                let ddgfd = (state |> (Seq.map string >> String.concat ""))
+                if (state |> (Seq.map string >> String.concat "")) = "9876543210"
+                then None
+                else
+                    let nextState = getNextPermutation 10 state
+                    Some (nextState, nextState)
             )
-            >> flip Seq.forall {0..6}
+        x
+        |> Seq.map (Seq.map string >> String.concat "")
+        |> Seq.takeWhile (int64 >> ((>) 9876543210L))
+        |> Seq.where(fun x ->
+            {0..6}
+            |> Seq.forall(fun y ->
+                x
+                |> Seq.skip (y + 1)
+                |> Seq.take 3
+                |> stringConcatFromCharSeq
+                |> int
+                |> (fun z -> z % (primes |> Seq.item y) = 0)
+            )
         )
         |> Seq.sumBy int64
         |> string
