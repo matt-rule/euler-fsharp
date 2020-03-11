@@ -96,9 +96,9 @@ type EulerSolutionBenchmarks() =
     // member this.Problem23() =
     //     EulerSolving.problem23 28123
 
-    // [<Benchmark>]
-    // member this.Problem24() =
-    //     EulerSolving.problem24 1000000
+    [<Benchmark>]
+    member this.Problem24() =
+        EulerSolving.problem24 1000000
 
     // [<Benchmark>]
     // member this.Problem25() =
@@ -196,9 +196,9 @@ type EulerSolutionBenchmarks() =
     // member this.Problem46() =
     //     EulerSolving.problem46 ()
 
-    [<Benchmark>]
-    member this.Problem47() =
-        EulerSolving.problem47 4
+    // [<Benchmark>]
+    // member this.Problem47() =
+    //     EulerSolving.problem47 4
 
     // [<Benchmark>]
     // member this.Problem48() =

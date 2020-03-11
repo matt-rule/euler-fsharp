@@ -335,23 +335,41 @@ module EulerSolving =
         Seq.unfold (fun x -> Some(x, f x)) state
 
     let getNextPermutation n (arr : 'a array) =
-        let i1 =
+        let i =
             {n-2 .. -1 .. 0}
-            |> Seq.find (fun i -> arr.[i] < arr.[i+1])
-        let v2 =
-            arr
-            |> Array.skip (i1 + 1)
-            |> Array.where ((<) arr.[i1])
-            |> Array.min
-        let i2 = arr |> Array.findIndex ((=) v2)
+            |> Seq.find (fun x -> arr.[x] < arr.[x+1])
+        let j =
+            {n-1 .. -1 .. i}
+            |> Seq.find (fun x -> arr.[x] > arr.[i])
+        
         Array.concat [|
-            (arr |> Array.take i1);
-            [| arr.[i2] |];
+            (arr |> Array.take i);
+            [| arr.[j] |];
             arr
-            |> Array.skip i1
-            |> Array.where ((<>) arr.[i2])
-            |> Array.sort
+            |> Array.skip (i + 1)
+            |> Array.map (fun x -> if x = arr.[j] then arr.[i] else x)
+            |> Array.rev
         |]
+
+
+    // let getNextPermutation n (arr : 'a array) =
+    //     let i1 =
+    //         {n-2 .. -1 .. 0}
+    //         |> Seq.find (fun i -> arr.[i] < arr.[i+1])
+    //     let v2 =
+    //         arr
+    //         |> Array.skip (i1 + 1)
+    //         |> Array.where ((<) arr.[i1])
+    //         |> Array.min
+    //     let i2 = arr |> Array.findIndex ((=) v2)
+    //     Array.concat [|
+    //         (arr |> Array.take i1);
+    //         [| arr.[i2] |];
+    //         arr
+    //         |> Array.skip i1
+    //         |> Array.where ((<>) arr.[i2])
+    //         |> Array.sort
+    //     |]
 
     let problem24 n =
         customUnfold (getNextPermutation 10) [| 0..9 |]
@@ -662,7 +680,6 @@ module EulerSolving =
         let x =
             [| 0L..9L |]
             |> Seq.unfold (fun state ->
-                let ddgfd = (state |> (Seq.map string >> String.concat ""))
                 if (state |> (Seq.map string >> String.concat "")) = "9876543210"
                 then None
                 else
