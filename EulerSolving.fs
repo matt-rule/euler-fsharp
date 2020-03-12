@@ -412,9 +412,21 @@ module EulerSolving =
     // You can reduce the line count by declaring a function further up,
     // then avoiding brackets around it when using it
     let problem27 cap =
+        let mutable cachedPrimes : (option<bool> array) =
+            Seq.replicate 200000 None
+            |> Array.ofSeq
+        let tryCachedPrime n =
+            if n < 0 || n >= 200000
+            then
+                isPrime n
+            else
+                if cachedPrimes.[n].IsNone
+                then
+                    do cachedPrimes.[n] <- Some(isPrime n)
+                cachedPrimes.[n].Value
         let consecutivePrimes a b =
             Seq.initInfinite((+) 1)
-            |> Seq.find(fun n -> (n*n + a*n + b) |> isPrime |> not)
+            |> Seq.find(fun n -> (n*n + a*n + b) |> tryCachedPrime |> not)
         seq {
             for a in -(cap-1)..(cap-1) do
             for b in -cap..cap ->
