@@ -108,10 +108,10 @@ type EulerSolutionBenchmarks() =
     // member this.Problem26() =
     //     EulerSolving.problem26 10
 
-    // // TODO: Needs optimising! (1.8 secs)
-    // [<Benchmark>]
-    // member this.Problem27() =
-    //     EulerSolving.problem27 1000
+    // TODO: Needs optimising! (1.8 secs)
+    [<Benchmark>]
+    member this.Problem27() =
+        EulerSolving.problem27 1000
 
     // [<Benchmark>]
     // member this.Problem28() =
@@ -196,11 +196,11 @@ type EulerSolutionBenchmarks() =
     // member this.Problem46() =
     //     EulerSolving.problem46 ()
 
-    // // TODO: Needs optimising! (13m32s)
-    // // Optimisation attempt 1: 10m 46s
-    [<Benchmark>]
-    member this.Problem47() =
-        EulerSolving.problem47 4
+    // // // TODO: Needs optimising! (13m32s)
+    // // // Optimisation attempt 1: 10m 46s
+    // [<Benchmark>]
+    // member this.Problem47() =
+    //     EulerSolving.problem47 4
 
     // [<Benchmark>]
     // member this.Problem48() =
