@@ -84,6 +84,30 @@ module EulerSolving =
         |> Seq.map (fun x -> (x, numberOfTimesDivisible n x 0))
         |> Seq.where (snd >> ((<>) 0))
 
+    let intSqrt = float >> sqrt >> int
+
+    let customUnfold f state =
+        Seq.unfold (fun x -> Some(x, f x)) state
+
+    let rec repeatDivide x y =
+        if (x % y <> 0)
+        then x
+        else repeatDivide (x / y) y
+
+    let rec distinctPrimeFactorisation n p res =
+        if n = 1
+        then
+            res
+        else
+            let nextPrimeAfterPWhichDividesN =
+                customUnfold ((+) 1) (p + 1)
+                |> Seq.where isPrime
+                |> Seq.find (((%) n) >> ((=) 0))
+            distinctPrimeFactorisation
+                (repeatDivide n nextPrimeAfterPWhichDividesN)
+                nextPrimeAfterPWhichDividesN
+                (res @ [nextPrimeAfterPWhichDividesN])
+
     let problem5 n =
         let factorisations =
             [|1..n|]
@@ -154,8 +178,6 @@ module EulerSolving =
         |> Seq.where isPrime64
         |> Seq.sum
         |> string
-
-    let intSqrt = float >> sqrt >> int
 
     // TODO: Consider the triangular number sequence on problem 45.
 
@@ -332,9 +354,6 @@ module EulerSolving =
         |> Seq.sum
         |> string
 
-    let customUnfold f state =
-        Seq.unfold (fun x -> Some(x, f x)) state
-
     let getNextPermutation n (arr : 'a array) =
         let i =
             {n-2 .. -1 .. 0}
@@ -413,18 +432,18 @@ module EulerSolving =
     // You can reduce the line count by declaring a function further up,
     // then avoiding brackets around it when using it
     let problem27 cap =
-        let mutable cachedPrimes : (option<bool> array) =
-            Seq.replicate 200000 None
+        let mutable cachedPrimes : (int array) =
+            Seq.replicate 50000 -1
             |> Array.ofSeq
         let tryCachedPrime n =
-            if n < 0 || n >= 200000
+            if n < 0 || n >= 50000
             then
                 isPrime n
             else
-                if cachedPrimes.[n].IsNone
+                if cachedPrimes.[n] = -1
                 then
-                    do cachedPrimes.[n] <- Some(isPrime n)
-                cachedPrimes.[n].Value
+                    do cachedPrimes.[n] <- (if isPrime n then 1 else 0)
+                (cachedPrimes.[n] = 1)
         let consecutivePrimes a b =
             Seq.initInfinite((+) 1)
             |> Seq.find(fun n -> (n*n + a*n + b) |> tryCachedPrime |> not)
@@ -803,7 +822,7 @@ module EulerSolving =
 // >>>>>>> d929318076621bc394a12695260b9c55f552a829
     let problem47 n =
         Seq.initInfinite((+) 1)
-        |> Seq.map (fun x -> (x, (primeFactors x |> Seq.length)))
+        |> Seq.map (fun x -> (x, ((distinctPrimeFactorisation x 0 []) |> List.length)))
         |> Seq.windowed n
         |> Seq.find (Array.forall(snd >> ((=) n)))
         |> (fun x -> x.[0] |> fst)

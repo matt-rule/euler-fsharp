@@ -16,6 +16,7 @@ type EulerSolutionBenchmarks() =
     // member this.Problem3() =
     //     EulerSolving.problem3 600851475143L
     
+    // // ~ 400ms (Windows)
     // [<Benchmark>]
     // member this.Problem4() =
     //     EulerSolving.problem4 3
@@ -36,6 +37,7 @@ type EulerSolutionBenchmarks() =
     // member this.Problem8() =
     //     EulerSolving.problem8 (File.ReadAllLines "data/problem8.txt") 13
 
+    // // ~ 600ms (Windows)
     // [<Benchmark>]
     // member this.Problem9() =
     //     EulerSolving.problem9 1000
@@ -48,6 +50,7 @@ type EulerSolutionBenchmarks() =
     // member this.Problem11() =
     //     EulerSolving.problem11 (File.ReadAllLines "data/problem11.txt") 20
 
+    // // ~ 500ms (Windows)
     // [<Benchmark>]
     // member this.Problem12() =
     //     EulerSolving.problem12 500
@@ -56,6 +59,7 @@ type EulerSolutionBenchmarks() =
     // member this.Problem13() =
     //     EulerSolving.problem13 (File.ReadAllLines "data/problem13.txt")
 
+    // // ~ 700ms (Windows)
     // [<Benchmark>]
     // member this.Problem14() =
     //     EulerSolving.problem14 1000000L
@@ -96,6 +100,7 @@ type EulerSolutionBenchmarks() =
     // member this.Problem23() =
     //     EulerSolving.problem23 28123
 
+    // // ~ 700ms (Windows)
     // [<Benchmark>]
     // member this.Problem24() =
     //     EulerSolving.problem24 1000000
@@ -108,10 +113,10 @@ type EulerSolutionBenchmarks() =
     // member this.Problem26() =
     //     EulerSolving.problem26 10
 
-    // TODO: Needs optimising! (1.8 secs)
-    [<Benchmark>]
-    member this.Problem27() =
-        EulerSolving.problem27 1000
+    // // < 1s (Windows)
+    // [<Benchmark>]
+    // member this.Problem27() =
+    //     EulerSolving.problem27 1000
 
     // [<Benchmark>]
     // member this.Problem28() =
@@ -121,13 +126,17 @@ type EulerSolutionBenchmarks() =
     // member this.Problem29() =
     //     EulerSolving.problem29 100
 
+    // // ~ 230ms (Windows)
     // [<Benchmark>]
     // member this.Problem30() =
     //     EulerSolving.problem30 5
 
+    // ~ 700ms (Windows)
     // [<Benchmark>]
     // member this.Problem31() =
     //     EulerSolving.problem31 200
+
+    // Optimised to here (Windows)
 
     // // TODO: Needs optimising! (20.0 secs)
     // [<Benchmark>]
@@ -196,11 +205,12 @@ type EulerSolutionBenchmarks() =
     // member this.Problem46() =
     //     EulerSolving.problem46 ()
 
-    // // // TODO: Needs optimising! (13m32s)
-    // // // Optimisation attempt 1: 10m 46s
-    // [<Benchmark>]
-    // member this.Problem47() =
-    //     EulerSolving.problem47 4
+    // TODO: Needs optimising! (13m32s)
+    // Optimisation attempt 1: 10m 46s
+    // Optimisation attempt 2: ~ 8m
+    [<Benchmark>]
+    member this.Problem47() =
+        EulerSolving.problem47 4
 
     // [<Benchmark>]
     // member this.Problem48() =
