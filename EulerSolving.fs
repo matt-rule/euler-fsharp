@@ -94,7 +94,7 @@ module EulerSolving =
         then x
         else repeatDivide (x / y) y
 
-    let rec distinctPrimeFactorisation n p res =
+    let rec distinctPrimeFactorisation n p (res : int) =
         if n = 1
         then
             res
@@ -106,7 +106,7 @@ module EulerSolving =
             distinctPrimeFactorisation
                 (repeatDivide n nextPrimeAfterPWhichDividesN)
                 nextPrimeAfterPWhichDividesN
-                (res @ [nextPrimeAfterPWhichDividesN])
+                (res + 1)
 
     let problem5 n =
         let factorisations =
@@ -822,11 +822,35 @@ module EulerSolving =
 // >>>>>>> d929318076621bc394a12695260b9c55f552a829
     let problem47 n =
         Seq.initInfinite((+) 1)
-        |> Seq.map (fun x -> (x, ((distinctPrimeFactorisation x 0 []) |> List.length)))
+        |> Seq.map (fun x -> (x, ((distinctPrimeFactorisation x 0 0))))
         |> Seq.windowed n
         |> Seq.find (Array.forall(snd >> ((=) n)))
         |> (fun x -> x.[0] |> fst)
         |> string
+
+    let problem47b n : int =
+        let limit = 1000000
+        let mutable factors = Array.replicate 1000000 0
+        let mutable count = 0
+        let mutable ans = -1
+        for i in {2..limit-1} do
+            if factors.[i] = 0 then
+                count <- 0
+                let mutable val_ = i
+                while (val_ < limit) do
+                    factors.[i] <- (factors.[i] + 1)
+                    val_ <- (val_ + 1)
+            elif factors.[i] = n then
+                count <- (count + 1)
+                if count = n then
+                    ans <- (i - 3)
+            else
+                count <- 0
+        ans
+
+
+
+
 
 // +    // Potential optimisations:
 // +    // - Cache primes (maybe using memoisation or calculate them up to a pre-specified limit)
