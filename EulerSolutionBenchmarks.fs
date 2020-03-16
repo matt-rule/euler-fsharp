@@ -211,7 +211,7 @@ type EulerSolutionBenchmarks() =
     // Optimisation attempt 2: ~ 8 mins 35s
     [<Benchmark>]
     member this.Problem47() =
-        EulerSolving.problem47b 4
+        EulerSolving.problem47 4
 
     // [<Benchmark>]
     // member this.Problem48() =
