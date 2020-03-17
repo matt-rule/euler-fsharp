@@ -91,7 +91,7 @@ module EulerValidation =
 
             // validate 47 (EulerSolving.problem47 2) "14";
             // validate 47 (EulerSolving.problem47 3) "644";
-            validate 47 (EulerSolving.problem47 4) "134043";
+            validate 47 (EulerSolving.problem47 4 1000000) "134043";
 
 
             // validate 48 (EulerSolving.problem48 10) "0405071317";
