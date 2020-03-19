@@ -487,24 +487,18 @@ module EulerSolving =
         |> string
 
     let problem32() =
-        let rec getPermutationsOneToNine (s : string) p =
-            seq {
-                for i in {1..9} |> Seq.where (string >> s.Contains >> not) do 
-                match p with
-                | 1 -> yield (s + (string i))
-                | _ -> yield! (getPermutationsOneToNine (s + (string i)) (p - 1))
-            }
-        let skipTakeDigits x y = Seq.skip x >> Seq.take y >> stringConcatFromCharSeq >> int
-        let allPermutations = (getPermutationsOneToNine "" 9)
+        let skipTakeDigits x y = Seq.skip x >> Seq.take y >> stringConcatFromIntSeq >> int
+        let allPermutations = (customUnfold (getNextPermutation 9) [| 1..9 |])
         allPermutations
+        |> Seq.takeWhile (fun x -> x |> stringConcatFromIntSeq <> "987654312")
         |> Seq.collect(fun x ->
             seq {
                 for productDigits in {3..7} do
                 for multiplierDigits in {1..(8-productDigits)} do
                 let multiplicandDigits = 9 - productDigits - multiplierDigits
-                let multiplicand = x |> skipTakeDigits 0 multiplicandDigits
-                let multiplier = x |> skipTakeDigits multiplicandDigits multiplierDigits
-                let product = x |> skipTakeDigits (multiplicandDigits + multiplierDigits) productDigits
+                let multiplicand = (Array.sub x 0 multiplicandDigits) |> stringConcatFromIntSeq |> int
+                let multiplier = (Array.sub x multiplicandDigits multiplierDigits) |> stringConcatFromIntSeq |> int
+                let product = (Array.sub x (multiplicandDigits + multiplierDigits) productDigits) |> stringConcatFromIntSeq |> int
                 if (multiplicand * multiplier = product)
                 then yield product
             }
