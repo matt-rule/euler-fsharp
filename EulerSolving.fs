@@ -780,50 +780,27 @@ module EulerSolving =
         |> Seq.find (canBeWrittenAsSumOfPrimeAndTwiceASquare >> not)
         |> string
 
-    // TODO: Replace the bit inside the seq with a recursive function which
-    // takes the "factors" array, count, and i as params
-    let problem47 n limit =
+    let problem47 n =
+        let limit = 1000000
         let mutable factors = Array.replicate limit 0
-        let rec firstN count i =
-            seq {
-                if i >= limit
-                then
-                    ()
-                else
-                    let nextCount =
-                        if factors.[i] = 0 then
-                            for j in {i .. i .. (limit - 1)} do
-                                factors.[j] <- (factors.[j] + 1)
-                            0
-                        elif factors.[i] = n then
-                            count + 1
-                        else
-                            0
-                    if nextCount = n then
+        let mutable count = 0
+        seq {
+            for i in {2..limit-1} do
+                if factors.[i] = 0 then
+                    count <- 0
+                    let mutable val_ = i
+                    while (val_ < limit) do
+                        factors.[val_] <- (factors.[val_] + 1)
+                        val_ <- (val_ + i)
+                elif factors.[i] = n then
+                    count <- (count + 1)
+                    if count = n then
                         yield (i - 3)
-                    yield! firstN nextCount (i + 1)
-            }
-        firstN 0 2 
+                else
+                    count <- 0
+        }
         |> Seq.head
         |> string
-            
-            
-        // let mutable count = 0
-        // seq {
-        //     for i in {2..limit-1} do
-        //         if factors.[i] = 0 then
-        //             count <- 0
-        //             let mutable val_ = i
-        //             while (val_ < limit) do
-        //                 factors.[val_] <- (factors.[val_] + 1)
-        //                 val_ <- (val_ + i)
-        //         elif factors.[i] = n then
-        //             count <- (count + 1)
-        //             if count = n then
-        //                 yield (i - 3)
-        //         else
-        //             count <- 0
-        // }
 
     let problem48 n =
         {1..n}
