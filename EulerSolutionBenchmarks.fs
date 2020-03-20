@@ -139,18 +139,19 @@ type EulerSolutionBenchmarks() =
     // Optimised to here (Windows)
 
     // TODO: Needs optimising! (20.0 secs)
-    [<Benchmark>]
-    member this.Problem32() =
-        EulerSolving.problem32 ()
+    // optimised down to 14 secs
+    // [<Benchmark>]
+    // member this.Problem32() =
+    //     EulerSolving.problem32 ()
 
     // [<Benchmark>]
     // member this.Problem33() =
     //     EulerSolving.problem33 ()
 
     // // TODO: Needs optimising! (1.8 secs)
-    // [<Benchmark>]
-    // member this.Problem34() =
-    //     EulerSolving.problem34 1000000
+    [<Benchmark>]
+    member this.Problem34() =
+        EulerSolving.problem34 1000000
 
     // // TODO: Needs optimising! (1.5 secs)
     // [<Benchmark>]

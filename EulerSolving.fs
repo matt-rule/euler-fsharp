@@ -559,6 +559,23 @@ module EulerSolving =
         |> Seq.where(fun x -> x = (sumOfDigitFactorials x))
         |> Seq.sum
         |> string
+            
+    let problem34b n =
+        let mutable cachedSums =
+            Array.replicate n (-1)
+        let sumOfDigitFactorials =
+            digits >> Seq.map factorial >> Seq.sum
+        {3..n}
+        |> Seq.where(fun x ->
+            x = (
+                let ordered = x |> digits |> Seq.sort |> stringConcatFromIntSeq |> int
+                if cachedSums.[ordered] = -1 then
+                    do cachedSums.[ordered] <- sumOfDigitFactorials ordered
+                cachedSums.[ordered]
+            )
+        )
+        |> Seq.sum
+        |> string
 
     let problem35 n =
         let isCircularPrime x =
