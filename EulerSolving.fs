@@ -553,27 +553,13 @@ module EulerSolving =
         else {1..n} |> Seq.reduce ( * )
             
     let problem34 n =
+        let factorials =
+            [| 0..9 |]
+            |> Array.map factorial
         let sumOfDigitFactorials =
-            digits >> Seq.map factorial >> Seq.sum
+            digits >> Seq.map (fun x -> factorials.[x]) >> Seq.sum
         {3..n}
         |> Seq.where(fun x -> x = (sumOfDigitFactorials x))
-        |> Seq.sum
-        |> string
-            
-    let problem34b n =
-        let mutable cachedSums =
-            Array.replicate n (-1)
-        let sumOfDigitFactorials =
-            digits >> Seq.map factorial >> Seq.sum
-        {3..n}
-        |> Seq.where(fun x ->
-            x = (
-                let ordered = x |> digits |> Seq.sort |> stringConcatFromIntSeq |> int
-                if cachedSums.[ordered] = -1 then
-                    do cachedSums.[ordered] <- sumOfDigitFactorials ordered
-                cachedSums.[ordered]
-            )
-        )
         |> Seq.sum
         |> string
 
