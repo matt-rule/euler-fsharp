@@ -564,8 +564,20 @@ module EulerSolving =
         |> string
 
     let problem35 n =
+        let mutable cachedPrimes : (int array) =
+            Seq.replicate 50000 -1
+            |> Array.ofSeq
+        let tryCachedPrime n =
+            if n < 0 || n >= 50000
+            then
+                isPrime n
+            else
+                if cachedPrimes.[n] = -1
+                then
+                    do cachedPrimes.[n] <- (if isPrime n then 1 else 0)
+                (cachedPrimes.[n] = 1)
         let isCircularPrime x =
-            if (x |> isPrime |> not) then
+            if (x |> tryCachedPrime |> not) then
                 false
             else
                 let digitsX = digits x
@@ -578,7 +590,7 @@ module EulerSolving =
                     ]
                     |> stringConcatFromIntSeq
                     |> int
-                    |> isPrime
+                    |> tryCachedPrime
                 )
         {2..n-1}
         |> Seq.where isCircularPrime

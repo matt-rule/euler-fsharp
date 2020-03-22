@@ -150,14 +150,15 @@ type EulerSolutionBenchmarks() =
 
     // Original time: 1.8 secs
     // Now < 1 sec on a good day (Windows)
-    [<Benchmark>]
-    member this.Problem34() =
-        EulerSolving.problem34 1000000
-
-    // // TODO: Needs optimising! (1.5 secs)
     // [<Benchmark>]
-    // member this.Problem35() =
-    //     EulerSolving.problem35 1000000
+    // member this.Problem34() =
+    //     EulerSolving.problem34 1000000
+
+    // TODO: Needs optimising! (1.5 secs)
+    // Now < 1.2 secs.
+    [<Benchmark>]
+    member this.Problem35() =
+        EulerSolving.problem35 1000000
 
     // // TODO: Needs optimising! (2.7 secs)
     // [<Benchmark>]
